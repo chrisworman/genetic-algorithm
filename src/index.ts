@@ -1,10 +1,10 @@
+import CNFChromosome from "./examples/CNF/CNFChromosome";
 import CNFExpresion from "./examples/CNF/CNFExpression";
-import CNFGene from "./examples/CNF/CNFGene";
 import CNFSatProblem from "./examples/CNF/CNFSatProblem";
 import GABuilder from "./gaBuilder";
-import GeneCombinators from "./helpers/geneCombiners";
-import GeneMutators from "./helpers/geneMutators";
-import GeneSelectors from "./helpers/geneSelectors";
+import ChromosomeCombiners from "./helpers/chromosomeCombiners";
+import ChromosomeMutators from "./helpers/chromosomeMutators";
+import ChromosomeSelectors from "./helpers/chromosomeSelectors";
 
 const TEST_CNF_FILE_TEXT =
 `
@@ -102,74 +102,79 @@ p cnf 50 80
 `;
 
 const main = () => {
-    const numberOfGenerations = 100;
-    const gaBuilder: GABuilder<CNFSatProblem, CNFGene> = new GABuilder();
+    const MAX_RANDOM_COUNT = 500;
+    const MAX_NUMBER_OF_GENERATIONS = 2000;
+    const gaBuilder: GABuilder<CNFSatProblem, CNFChromosome, boolean> = new GABuilder();
     const ga = gaBuilder
         .withProblem(new CNFSatProblem(CNFExpresion.fromCNFFileText(TEST_CNF_FILE_TEXT)))
         // Random genes
-        .withGeneGenerator({
+        .withChromosomeGenerator({
             generate: (context) => {
-                const numberToGenerate = 120 - context.currentGeneration.number;
-                const generatedGenes: CNFGene[] = [];
+                const numberToGenerate = Math.floor(
+                    MAX_RANDOM_COUNT *
+                    ((MAX_NUMBER_OF_GENERATIONS - context.population.number) / MAX_NUMBER_OF_GENERATIONS),
+                );
+                console.log(`generating ${numberToGenerate} random chromosomes`);
+                const randomChromosomes: CNFChromosome[] = [];
                 const variableCount = context.problem.expression.getVariableCount();
                 for (let i = 0; i < numberToGenerate; i++) {
                     const truthAssignments: boolean[] = [];
-                    for (let j = 1; j <= variableCount; j++) {
+                    for (let j = 0; j < variableCount; j++) {
                         truthAssignments[j] = Math.random() < 0.5;
                     }
-                    generatedGenes.push(new CNFGene(truthAssignments));
+                    randomChromosomes.push(new CNFChromosome(truthAssignments));
                 }
-                return generatedGenes;
+                return randomChromosomes;
             },
         })
         // Mutation
-        .withGeneGenerator({
+        .withChromosomeGenerator({
             generate: (context) => {
-                const generatedGenes: CNFGene[] = [];
+                const mutatedChromosomes: CNFChromosome[] = [];
                 for (let i = 0; i < 25; i++) {
-                    const [randomGene] = GeneSelectors.randomUnique(context.currentGeneration.genePool);
-                    const mutatedTruthAssignments = GeneMutators.mutateN(
-                        randomGene.getTruthAssignments(),
-                        2,
-                        (a) => {
-                            if (a === undefined) {
-                                return a;
-                            }
-                            return !a;
-                        },
+                    const [randomChromosome] = ChromosomeSelectors.randomUnique(context.population.chromosomes);
+                    const mutatedChromosome = ChromosomeMutators.mutateN(
+                        randomChromosome,
+                        Math.floor(Math.random() * 5) + 1,
+                        (a) => !a,
                     );
-                    generatedGenes.push(new CNFGene(mutatedTruthAssignments));
+                    mutatedChromosomes.push(mutatedChromosome);
                 }
-                return generatedGenes;
+                return mutatedChromosomes;
             },
         })
         // Crossover
-        .withGeneGenerator({
+        .withChromosomeGenerator({
             generate: (context) => {
-                const generatedGenes: CNFGene[] = [];
+                const generatedGenes: CNFChromosome[] = [];
                 for (let i = 0; i < 10; i++) {
-                    const [g1, g2] =  GeneSelectors.randomUnique(context.currentGeneration.genePool, 2);
-                    const crossedTruthAssignments = GeneCombinators.crossoverAlternating(
-                        g1.getTruthAssignments(),
-                        g2.getTruthAssignments(),
-                    );
-                    generatedGenes.push(new CNFGene(crossedTruthAssignments));
+                    const [c1, c2] =  ChromosomeSelectors.randomUnique(context.population.chromosomes, 2);
+                    const alternated = ChromosomeCombiners.alternateGenes(c1, c2);
+                    generatedGenes.push(alternated);
                 }
                 return generatedGenes;
             },
         })
-        // Remove unfit genes
-        .withGeneFilter({
+        // Keep fit chromosomes
+        .withChromosomeFilter({
             filter: (context) => {
-                return context.currentGeneration.genePool.filter((gene) => {
-                    // Less than 50% of clauses satisfied
-                    return context.getFitness(gene) >= context.problem.expression.getClauseCount() * 0.5;
+                return context.population.chromosomes.filter((chromosome) => {
+                    // At least 25% of clauses satisfied
+                    return context.getFitness(chromosome) >= context.problem.expression.getClauseCount() * 0.25;
+                });
+            },
+        })
+        // Keep young chromosomes
+        .withChromosomeFilter({
+            filter: (context) => {
+                return context.population.chromosomes.filter((chromosome) => {
+                    return chromosome.age < 20;
                 });
             },
         })
         .withFinishCondition((context) => {
             return context.best?.fitness === context.problem.expression.getClauseCount() // satisfied
-                || context.currentGeneration.number >= numberOfGenerations; // max number of generations
+                || context.population.number >= MAX_NUMBER_OF_GENERATIONS; // max number of generations
         })
         .build();
 

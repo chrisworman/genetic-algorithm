@@ -1,13 +1,17 @@
+import IChromosome from "./iChromosome";
 import IGAProblem from "./iGAProblem";
-import IGene from "./iGene";
-import IGeneration from "./iGeneration";
+import IPopulation from "./iPopulation";
 
-export default interface IGAContext<TProblem extends IGAProblem<TGene>, TGene extends IGene> {
+export default interface IGAContext<
+    TProblem extends IGAProblem<TChromosome, TGene>,
+    TChromosome extends IChromosome<TGene>,
+    TGene,
+> {
     problem: TProblem;
-    currentGeneration: IGeneration<TGene>;
+    population: IPopulation<TChromosome, TGene>;
     best?: {
-        gene: TGene;
+        chromosome: TChromosome;
         fitness: number;
     };
-    getFitness: (gene: TGene) => number;
+    getFitness: (gene: TChromosome) => number;
 }

@@ -1,5 +1,5 @@
-import IGene from "./iGene";
+import IChromosome from "./iChromosome";
 
-export default interface IGAProblem<TGene extends IGene> {
-    getFitness(gene: TGene): number;
+export default interface IGAProblem<TChromosome extends IChromosome<TGene>, TGene> {
+    getFitness(gene: TChromosome): number;
 }

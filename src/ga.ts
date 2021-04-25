@@ -1,73 +1,78 @@
+import IChromosome from "./interfaces/iChromosome";
+import IChromosomeFilter from "./interfaces/iChromosomeFilter";
+import IChromosomeGenerator from "./interfaces/iChromosomeGenerator";
 import IGAContext from "./interfaces/iGAContext";
 import IGAProblem from "./interfaces/iGAProblem";
-import IGene from "./interfaces/iGene";
-import IGeneFilter from "./interfaces/iGeneFilter";
-import IGeneGenerator from "./interfaces/iGeneGenerator";
-import IGeneration from "./interfaces/iGeneration";
+import IPopulation from "./interfaces/iPopulation";
 
-export default class GA<TProblem extends IGAProblem<TGene>, TGene extends IGene> {
+export default class GA<
+    TProblem extends IGAProblem<TChromosome, TGene>,
+    TChromosome extends IChromosome<TGene>,
+    TGene,
+> {
     private problem: TProblem;
-    private geneGenerators: Array<IGeneGenerator<TProblem, TGene>>;
-    private geneFilters: Array<IGeneFilter<TProblem, TGene>>;
-    private finishCondition: (context: IGAContext<TProblem, TGene>) => boolean;
-    private currentContext: IGAContext<TProblem, TGene>;
+    private chromosomeGenerators: Array<IChromosomeGenerator<TProblem, TChromosome, TGene>>;
+    private chromosomeFilters: Array<IChromosomeFilter<TProblem, TChromosome, TGene>>;
+    private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
+    private currentContext: IGAContext<TProblem, TChromosome, TGene>;
 
     constructor(
         problem: TProblem,
-        geneGenerators: Array<IGeneGenerator<TProblem, TGene>>,
-        geneFilters: Array<IGeneFilter<TProblem, TGene>>,
-        finishCondition: (context: IGAContext<TProblem, TGene>) => boolean,
+        chromosomeGenerators: Array<IChromosomeGenerator<TProblem, TChromosome, TGene>>,
+        chromosomeFilters: Array<IChromosomeFilter<TProblem, TChromosome, TGene>>,
+        finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
     ) {
         this.problem = problem;
-        this.geneGenerators = geneGenerators;
-        this.geneFilters = geneFilters;
+        this.chromosomeGenerators = chromosomeGenerators;
+        this.chromosomeFilters = chromosomeFilters;
         this.finishCondition = finishCondition;
     }
 
-    public run(): IGAContext<TProblem, TGene> {
+    public run(): IGAContext<TProblem, TChromosome, TGene> {
         const fitnessCache = new Map<string, number>();
         this.currentContext = {
-            currentGeneration: {
-                genePool: [],
-                number: 0,
-            },
-            getFitness: (gene) => {
-                const serializedGene = gene.serialize();
+            getFitness: (chromosome) => {
+                const serializedGene = chromosome.serialize();
                 let fitness = fitnessCache.get(serializedGene);
                 if (fitness === undefined) {
-                    fitness = this.problem.getFitness(gene);
+                    fitness = this.problem.getFitness(chromosome);
                     fitnessCache.set(serializedGene, fitness);
                 }
                 return fitness;
             },
+            population: {
+                chromosomes: [],
+                number: 0,
+            },
             problem: this.problem,
         };
         do {
-            this.geneGenerators.forEach((generator) => {
-                const newGenes = generator.generate(this.currentContext);
-                const newGenePool = this.currentContext.currentGeneration.genePool.concat(newGenes);
-                this.currentContext.currentGeneration.genePool = newGenePool;
+            this.chromosomeGenerators.forEach((generator) => {
+                const generatedChromosomes = generator.generate(this.currentContext);
+                const combinedChromosomes = this.currentContext.population.chromosomes.concat(generatedChromosomes);
+                this.currentContext.population.chromosomes = combinedChromosomes;
             });
-            this.geneFilters.forEach((geneFilter) => {
-                this.currentContext.currentGeneration.genePool = geneFilter.filter(this.currentContext);
+            this.chromosomeFilters.forEach((filter) => {
+                this.currentContext.population.chromosomes = filter.filter(this.currentContext);
             });
-            this.currentContext.currentGeneration.genePool.forEach((gene) => {
-                const fitness = this.currentContext.getFitness(gene);
+            this.currentContext.population.chromosomes.forEach((chromosome) => {
+                const fitness = this.currentContext.getFitness(chromosome);
                 if (!this.currentContext.best || fitness > this.currentContext.best.fitness) {
-                    this.currentContext.best = { gene, fitness };
+                    this.currentContext.best = { chromosome, fitness };
                 }
             });
-            this.currentContext.currentGeneration.number++;
-            console.log(`generation ${this.currentContext.currentGeneration.number}, gene pool size ${this.currentContext.currentGeneration.genePool.length}, best ${this.currentContext.best ? this.currentContext.best.fitness : 0}`);
+            this.currentContext.population.chromosomes.forEach((chromosome) => chromosome.age++);
+            this.currentContext.population.number++;
+            console.log(`generation number ${this.currentContext.population.number}, population size ${this.currentContext.population.chromosomes.length}, best ${this.currentContext.best ? this.currentContext.best.fitness : 0}`);
         } while (!this.finishCondition(this.currentContext));
 
         return this.currentContext;
     }
 
-    public getGeneration(): IGeneration<TGene> {
+    public getPopulation(): IPopulation<TChromosome, TGene> {
         return {
-            genePool: [ ...this.currentContext.currentGeneration.genePool ],
-            number: this.currentContext.currentGeneration.number,
+            chromosomes: [ ...this.currentContext.population.chromosomes ],
+            number: this.currentContext.population.number,
         };
     }
 }

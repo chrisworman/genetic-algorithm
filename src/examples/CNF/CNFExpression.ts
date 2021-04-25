@@ -11,7 +11,7 @@ export default class CNFExpresion {
             const canonicalLine = line.trim().toLowerCase();
             if (canonicalLine) {
                 if (canonicalLine.startsWith("p")) {
-                    const [ /* p */ , /* file type */ , vc /* expression count */ ] = canonicalLine.split(" ");
+                    const [ /* p */ , /* file type */ , vc /* , expression count */ ] = canonicalLine.split(" ");
                     variableCount = parseInt(vc, 10);
                 } else if (!canonicalLine.startsWith("c")) {
                     clauses.push(CNFClause.fromCNFFileLine(canonicalLine));
@@ -40,7 +40,7 @@ export default class CNFExpresion {
     public numberOfClausesSatisfied(truthAssignments: boolean[]): number {
         let satisfied = 0;
         for (const clause of this.clauses) {
-            if (clause.statisfied(truthAssignments)) {
+            if (clause.isSatisfied(truthAssignments)) {
                 satisfied++;
             }
         }

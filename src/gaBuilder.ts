@@ -1,49 +1,57 @@
 import GA from "./ga";
+import IChromosome from "./interfaces/iChromosome";
+import IChromosomeFilter from "./interfaces/iChromosomeFilter";
+import IChromosomeGenerator from "./interfaces/iChromosomeGenerator";
 import IGAContext from "./interfaces/iGAContext";
 import IGAProblem from "./interfaces/iGAProblem";
-import IGene from "./interfaces/iGene";
-import IGeneFilter from "./interfaces/iGeneFilter";
-import IGeneGenerator from "./interfaces/iGeneGenerator";
 
-export default class GABuilder<TProblem extends IGAProblem<TGene>, TGene extends IGene> {
+export default class GABuilder<
+    TProblem extends IGAProblem<TChromosome, TGene>,
+    TChromosome extends IChromosome<TGene>,
+    TGene,
+> {
     private problem: TProblem;
-    private geneGenerators: Array<IGeneGenerator<TProblem, TGene>>;
-    private geneFilters: Array<IGeneFilter<TProblem, TGene>>;
-    private finishCondition: (context: IGAContext<TProblem, TGene>) => boolean;
+    private chromosomeGenerators: Array<IChromosomeGenerator<TProblem, TChromosome, TGene>>;
+    private chromosomeFilters: Array<IChromosomeFilter<TProblem, TChromosome, TGene>>;
+    private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
 
     public constructor() {
-        this.geneGenerators = [];
-        this.geneFilters = [];
-        this.finishCondition = (context) => context.currentGeneration.number > 100; // Default 100
+        this.chromosomeGenerators = [];
+        this.chromosomeFilters = [];
+        this.finishCondition = (context) => context.population.number > 100; // Default 100 generations
     }
 
-    public withProblem(problem: TProblem): GABuilder<TProblem, TGene> {
+    public withProblem(problem: TProblem): GABuilder<TProblem, TChromosome, TGene> {
         this.problem = problem;
         return this;
     }
 
-    public withGeneGenerator(geneGenerator: IGeneGenerator<TProblem, TGene>): GABuilder<TProblem, TGene> {
-        this.geneGenerators.push(geneGenerator);
+    public withChromosomeGenerator(
+        chromosomeGenerator: IChromosomeGenerator<TProblem, TChromosome, TGene>,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        this.chromosomeGenerators.push(chromosomeGenerator);
         return this;
     }
 
-    public withGeneFilter(geneFilter: IGeneFilter<TProblem, TGene>): GABuilder<TProblem, TGene> {
-        this.geneFilters.push(geneFilter);
+    public withChromosomeFilter(
+        chromosomeFilter: IChromosomeFilter<TProblem, TChromosome, TGene>,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        this.chromosomeFilters.push(chromosomeFilter);
         return this;
     }
 
     public withFinishCondition(
-        finishCondition: (context: IGAContext<TProblem, TGene>) => boolean,
-    ): GABuilder<TProblem, TGene> {
+        finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
+    ): GABuilder<TProblem, TChromosome, TGene> {
         this.finishCondition = finishCondition;
         return this;
     }
 
-    public build(): GA<TProblem, TGene> {
-        return new GA<TProblem, TGene>(
+    public build(): GA<TProblem, TChromosome, TGene> {
+        return new GA<TProblem, TChromosome, TGene>(
             this.problem,
-            this.geneGenerators,
-            this.geneFilters,
+            this.chromosomeGenerators,
+            this.chromosomeFilters,
             this.finishCondition,
         );
     }
