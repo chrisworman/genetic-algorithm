@@ -5,6 +5,7 @@ import CNFExpression from "./CNFExpression";
 export default class CNFSatProblem implements IGAProblem<CNFChromosome, boolean> {
     public expression: CNFExpression;
     constructor(expression: CNFExpression) {
+        console.log(`Creating CNFSatProblem with ${expression.getClauseCount()} clauses`);
         this.expression = expression;
     }
 

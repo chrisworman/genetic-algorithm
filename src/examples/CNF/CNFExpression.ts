@@ -13,7 +13,7 @@ export default class CNFExpresion {
                 if (canonicalLine.startsWith("p")) {
                     const [ /* p */ , /* file type */ , vc /* , expression count */ ] = canonicalLine.split(" ");
                     variableCount = parseInt(vc, 10);
-                } else if (!canonicalLine.startsWith("c")) {
+                } else if (!canonicalLine.startsWith("c") && !canonicalLine.startsWith("0")) {
                     clauses.push(CNFClause.fromCNFFileLine(canonicalLine));
                 }
             }

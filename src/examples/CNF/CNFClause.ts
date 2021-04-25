@@ -21,6 +21,7 @@ export default class CNFClause {
     private variables: ICNFClauseVariable[];
 
     private constructor(variables: ICNFClauseVariable[]) {
+        // console.log(`Creating CNFClause ${variables.map((v) => `${v.isNegated ? "-" : ""}${v.index + 1}`)}`);
         this.variables = variables;
     }
 

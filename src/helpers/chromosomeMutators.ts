@@ -1,7 +1,7 @@
 import IChromosome from "../interfaces/iChromosome";
 
 export default class ChromosomeMutators {
-    public static mutateN<TChromosome extends IChromosome<TGene>, TGene>(
+    public static applyGeneMutator<TChromosome extends IChromosome<TGene>, TGene>(
         chromosome: TChromosome,
         n: number,
         mutator: (item: TGene) => TGene,

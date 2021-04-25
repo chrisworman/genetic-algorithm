@@ -49,17 +49,17 @@ export default class GA<
         do {
             this.chromosomeGenerators.forEach((generator) => {
                 const generatedChromosomes = generator.generate(this.currentContext);
+                generatedChromosomes.forEach((chromosome) => {
+                    const fitness = this.currentContext.getFitness(chromosome);
+                    if (!this.currentContext.best || fitness > this.currentContext.best.fitness) {
+                        this.currentContext.best = { chromosome, fitness };
+                    }
+                });
                 const combinedChromosomes = this.currentContext.population.chromosomes.concat(generatedChromosomes);
                 this.currentContext.population.chromosomes = combinedChromosomes;
             });
             this.chromosomeFilters.forEach((filter) => {
                 this.currentContext.population.chromosomes = filter.filter(this.currentContext);
-            });
-            this.currentContext.population.chromosomes.forEach((chromosome) => {
-                const fitness = this.currentContext.getFitness(chromosome);
-                if (!this.currentContext.best || fitness > this.currentContext.best.fitness) {
-                    this.currentContext.best = { chromosome, fitness };
-                }
             });
             this.currentContext.population.chromosomes.forEach((chromosome) => chromosome.age++);
             this.currentContext.population.number++;
