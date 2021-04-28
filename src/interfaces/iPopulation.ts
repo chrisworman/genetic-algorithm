@@ -1,6 +1,10 @@
 import IChromosome from "./iChromosome";
 
 export default interface IPopulation<TChromosome extends IChromosome<TGene>, TGene> {
-    number: number;
-    chromosomes: TChromosome[];
+    getEpoch: () => number;
+    newEpoch: (newChromosomes: TChromosome[]) => void;
+    getNFittest: (n: number) => TChromosome[];
+    size: () => number;
+    removeNLeastFit: (n: number) => void;
+    removeUnfit: (minFitness: number) => void;
 }

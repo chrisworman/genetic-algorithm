@@ -7,17 +7,32 @@ export default class CNFExpresion {
         const fileLines = fileText.split("\n");
         const clauses = [];
         let variableCount = 0;
+        let currentIndices: number[] = [];
         fileLines.forEach((line) => {
             const canonicalLine = line.trim().toLowerCase();
             if (canonicalLine) {
                 if (canonicalLine.startsWith("p")) {
                     const [ /* p */ , /* file type */ , vc /* , expression count */ ] = canonicalLine.split(" ");
                     variableCount = parseInt(vc, 10);
-                } else if (!canonicalLine.startsWith("c") && !canonicalLine.startsWith("0")) {
-                    clauses.push(CNFClause.fromCNFFileLine(canonicalLine));
+                } else if (!canonicalLine.startsWith("c")) {
+                    const components = canonicalLine.split(" ").map((c) => c.trim()).filter((c) => c.length > 0);
+                    for (const component of components) {
+                        if (component === "0") {
+                            if (currentIndices.length > 0) {
+                                clauses.push(CNFClause.fromCNFFileIndices(currentIndices));
+                                currentIndices = [];
+                            }
+                        } else {
+                            currentIndices.push(parseInt(component, 10));
+                        }
+                    }
                 }
             }
         });
+        if (currentIndices.length > 0) {
+            clauses.push(CNFClause.fromCNFFileIndices(currentIndices));
+        }
+        console.log(`Creating CNF Expression with ${variableCount} variables and ${clauses.length} clauses`);
         return new CNFExpresion(variableCount, clauses);
     }
 

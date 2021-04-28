@@ -1,11 +1,35 @@
 import IChromosome from "../interfaces/iChromosome";
 
+// An array-based implementation of IChromosome
+// TODO: consider constraining TArrayChromosomeGene to be number | string | boolean since this solution
+// relies on serialization / deserialization.  Perhaps rename to PrimitiveArrayChromosome?
 export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosome<TArrayChromosomeGene> {
     public age: number;
     private array: TArrayChromosomeGene[];
+    private cachedSerialized: string | null;
+    private fitness: number;
+
     public constructor(initialArray?: TArrayChromosomeGene[]) {
         this.age = 0;
         this.array = initialArray ? initialArray : [];
+        this.cachedSerialized = null;
+    }
+
+    public getFitness() {
+        return this.fitness;
+    }
+
+    public setFitness(fitness: number) {
+        this.cachedSerialized = null;
+        this.fitness = fitness;
+    }
+
+    public getAge() {
+        return this.age;
+    }
+
+    public incrementAge() {
+        this.age++;
     }
 
     public clone(): IChromosome<TArrayChromosomeGene> {
@@ -13,19 +37,31 @@ export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosom
     }
 
     public deserialize(serialized: string): IChromosome<TArrayChromosomeGene> {
-        return new ArrayChromosome<TArrayChromosomeGene>(JSON.parse(serialized));
+        const deserialized = JSON.parse(serialized);
+        const result = new ArrayChromosome<TArrayChromosomeGene>(deserialized.array);
+        result.setFitness(deserialized.fitness);
+        return result;
     }
 
     public serialize(): string {
-        return JSON.stringify(this.array);
+        if (!this.cachedSerialized) {
+            this.cachedSerialized = JSON.stringify({
+                array: this.array,
+                fitness: this.fitness,
+            });
+        }
+        return this.cachedSerialized;
     }
 
     public getGeneCount(): number {
         return this.array.length;
     }
+
     public setGeneAt(index: number, gene: TArrayChromosomeGene) {
+        this.cachedSerialized = null;
         this.array[index] = gene;
     }
+
     public getGeneAt(index: number): TArrayChromosomeGene {
         return this.array[index];
     }
@@ -33,6 +69,7 @@ export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosom
     public getRandomGene(): TArrayChromosomeGene {
         return this.getGeneAt(this.getRandomGeneIndex());
     }
+
     public getRandomGeneIndex(): number {
        return Math.floor(Math.random() * this.getGeneCount());
     }

@@ -1,24 +1,27 @@
 import GA from "./ga";
 import IChromosome from "./interfaces/iChromosome";
-import IChromosomeFilter from "./interfaces/iChromosomeFilter";
-import IChromosomeGenerator from "./interfaces/iChromosomeGenerator";
 import IGAContext from "./interfaces/iGAContext";
-import IGAProblem from "./interfaces/iGAProblem";
+import IOperator from "./interfaces/iOperator";
+import IPopulation from "./interfaces/iPopulation";
+import IProblem from "./interfaces/iProblem";
+import ISelection from "./interfaces/iSelection";
 
 export default class GABuilder<
-    TProblem extends IGAProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome, TGene>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {
     private problem: TProblem;
-    private chromosomeGenerators: Array<IChromosomeGenerator<TProblem, TChromosome, TGene>>;
-    private chromosomeFilters: Array<IChromosomeFilter<TProblem, TChromosome, TGene>>;
+    private elitism: number;
+    private initialPopulation: IPopulation<TChromosome, TGene>;
+    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
+    private selection: ISelection<TProblem, TChromosome, TGene>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
 
     public constructor() {
-        this.chromosomeGenerators = [];
-        this.chromosomeFilters = [];
-        this.finishCondition = (context) => context.population.number > 100; // Default 100 generations
+        this.elitism = 0;
+        this.operators = [];
+        this.finishCondition = (context) => context.population.getEpoch() > 100; // Default 100 epochs
     }
 
     public withProblem(problem: TProblem): GABuilder<TProblem, TChromosome, TGene> {
@@ -26,17 +29,29 @@ export default class GABuilder<
         return this;
     }
 
-    public withChromosomeGenerator(
-        chromosomeGenerator: IChromosomeGenerator<TProblem, TChromosome, TGene>,
-    ): GABuilder<TProblem, TChromosome, TGene> {
-        this.chromosomeGenerators.push(chromosomeGenerator);
+    public withElitism(elitism: number = 1): GABuilder<TProblem, TChromosome, TGene> {
+        this.elitism = elitism;
         return this;
     }
 
-    public withChromosomeFilter(
-        chromosomeFilter: IChromosomeFilter<TProblem, TChromosome, TGene>,
+    public withInitialPopulation(
+        initialPopulation: IPopulation<TChromosome, TGene>,
     ): GABuilder<TProblem, TChromosome, TGene> {
-        this.chromosomeFilters.push(chromosomeFilter);
+        this.initialPopulation = initialPopulation;
+        return this;
+    }
+
+    public withSelection(
+        selection: ISelection<TProblem, TChromosome, TGene>,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        this.selection = selection;
+        return this;
+    }
+
+    public withOperator(
+        operator: IOperator<TProblem, TChromosome, TGene>,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        this.operators.push(operator);
         return this;
     }
 
@@ -50,8 +65,10 @@ export default class GABuilder<
     public build(): GA<TProblem, TChromosome, TGene> {
         return new GA<TProblem, TChromosome, TGene>(
             this.problem,
-            this.chromosomeGenerators,
-            this.chromosomeFilters,
+            this.elitism,
+            this.initialPopulation,
+            this.operators,
+            this.selection,
             this.finishCondition,
         );
     }

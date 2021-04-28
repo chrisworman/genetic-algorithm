@@ -4,7 +4,7 @@ import CNFSatProblem from "./examples/CNF/CNFSatProblem";
 import GABuilder from "./gaBuilder";
 import ChromosomeCombiners from "./helpers/chromosomeCombiners";
 import ChromosomeMutators from "./helpers/chromosomeMutators";
-import ChromosomeSelectors from "./helpers/chromosomeSelectors";
+import FRBTPopulation from "./helpers/frbtPopulation";
 
 const CNF_FILE_TEXT_SATISFIABLE_HARD_1 =
 `
@@ -1813,40 +1813,46 @@ p cnf 155 1135
 `;
 
 const main = () => {
-    const MAX_RANDOM_COUNT = 1500;
-    const MAX_NUMBER_OF_GENERATIONS = 5000;
+    const INITIAL_POPULATION_SIZE = 1000000;
+    const MAX_EPOCH = 3000;
+    const ELITISM = 600;
+    const SELECTION_SIZE = 6000;
+
+    const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(CNF_FILE_TEXT_SATISFIABLE_ZEBRA_1));
+
+    console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes`);
+    const initialChromosomes: CNFChromosome[] = [];
+    const variableCount = problem.expression.getVariableCount();
+    for (let i = 0; i < INITIAL_POPULATION_SIZE; i++) {
+        const truthAssignments: boolean[] = [];
+        for (let j = 0; j < variableCount; j++) {
+            truthAssignments[j] = Math.random() < 0.5;
+        }
+        const randomChromosome = new CNFChromosome(truthAssignments);
+        randomChromosome.setFitness(problem.getFitness(randomChromosome));
+        initialChromosomes.push(randomChromosome);
+    }
+    const initialPopulation: FRBTPopulation<CNFChromosome, boolean> = new FRBTPopulation(initialChromosomes);
+
     const gaBuilder: GABuilder<CNFSatProblem, CNFChromosome, boolean> = new GABuilder();
     const ga = gaBuilder
-        .withProblem(new CNFSatProblem(CNFExpresion.fromCNFFileText(CNF_FILE_TEXT_SATISFIABLE_ZEBRA_1)))
-        // Random genes
-        .withChromosomeGenerator({
-            generate: (context) => {
-                const numberToGenerate = Math.floor(
-                    MAX_RANDOM_COUNT *
-                    ((MAX_NUMBER_OF_GENERATIONS - context.population.number) / MAX_NUMBER_OF_GENERATIONS),
-                );
-                console.log(`generating ${numberToGenerate} random chromosomes`);
-                const randomChromosomes: CNFChromosome[] = [];
-                const variableCount = context.problem.expression.getVariableCount();
-                for (let i = 0; i < numberToGenerate; i++) {
-                    const truthAssignments: boolean[] = [];
-                    for (let j = 0; j < variableCount; j++) {
-                        truthAssignments[j] = Math.random() < 0.5;
-                    }
-                    randomChromosomes.push(new CNFChromosome(truthAssignments));
-                }
-                return randomChromosomes;
+        .withProblem(problem)
+        .withInitialPopulation(initialPopulation)
+        .withElitism(ELITISM)
+        .withSelection({
+            select: (context) => {
+                return context.population.getNFittest(SELECTION_SIZE);
             },
         })
         // Mutation
-        .withChromosomeGenerator({
-            generate: (context) => {
+        .withOperator({
+            operate: (context, selection) => {
                 const mutatedChromosomes: CNFChromosome[] = [];
-                for (let i = 0; i < 25; i++) {
-                    const [randomChromosome] = ChromosomeSelectors.randomUnique(context.population.chromosomes);
-                    const mutatedChromosome = ChromosomeMutators.applyGeneMutator(
-                        randomChromosome,
-                        Math.floor(Math.random() * 5) + 1,
+                for (const chromosome of selection) {
+                    const mutatedChromosome = ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>
+                    (
+                        chromosome,
+                        Math.floor(Math.random() * 25) + 1,
                         (a) => !a,
                     );
                     mutatedChromosomes.push(mutatedChromosome);
@@ -1854,44 +1860,41 @@ const main = () => {
                 return mutatedChromosomes;
             },
         })
-        // Crossover
-        .withChromosomeGenerator({
-            generate: (context) => {
+        // Alternating Crossover
+        .withOperator({
+            operate: (context, selection) => {
                 const generatedChromosomes: CNFChromosome[] = [];
-                for (let i = 0; i < 10; i++) {
-                    const [c1, c2] =  ChromosomeSelectors.randomUnique(context.population.chromosomes, 2);
-                    const alternated = ChromosomeCombiners.alternateGenes(c1, c2);
-                    generatedChromosomes.push(alternated);
+                for (const c1 of selection) {
+                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                    const [m1, m2] = ChromosomeCombiners.alternateGenes(c1, c2);
+                    generatedChromosomes.push(m1);
+                    generatedChromosomes.push(m2);
                 }
                 return generatedChromosomes;
             },
         })
-        // Keep fit chromosomes
-        .withChromosomeFilter({
-            filter: (context) => {
-                return context.population.chromosomes.filter((chromosome) => {
-                    // At least 5% of clauses satisfied
-                    return context.getFitness(chromosome) >= context.problem.expression.getClauseCount() * 0.05;
-                });
-            },
-        })
-        // Keep young chromosomes
-        .withChromosomeFilter({
-            filter: (context) => {
-                return context.population.chromosomes.filter((chromosome) => {
-                    return chromosome.age < 50;
-                });
+        // Traditional Crossover
+        .withOperator({
+            operate: (context, selection) => {
+                const generatedChromosomes: CNFChromosome[] = [];
+                for (const c1 of selection) {
+                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                    const [m1, m2] = ChromosomeCombiners.crossover(c1, c2);
+                    generatedChromosomes.push(m1);
+                    generatedChromosomes.push(m2);
+                }
+                return generatedChromosomes;
             },
         })
         .withFinishCondition((context) => {
             return context.best?.fitness === context.problem.expression.getClauseCount() // satisfied
-                || context.population.number >= MAX_NUMBER_OF_GENERATIONS; // max number of generations
+                || context.population.getEpoch() >= MAX_EPOCH; // max number of generations
         })
         .build();
 
     const result = ga.run();
 
-    console.log(JSON.stringify(result.best, null, 2));
+    console.log(JSON.stringify(result.best.fitness, null, 2));
 };
 
 main();

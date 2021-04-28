@@ -3,25 +3,19 @@ import ICNFClauseVariable from "./ICNFClauseVariable";
 // eg. (~x2 || x3 || x4)
 export default class CNFClause {
     // https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html
-    public static fromCNFFileLine(cnfFileLine: string) {
-        const variables = cnfFileLine
-            .split(" ")
-            .map((indexOrDelimeter) => indexOrDelimeter.trim())
-            .filter((indexOrDelimeter) => indexOrDelimeter.length > 0 && indexOrDelimeter !== "0")
-            .map((oneBasedNegatedIndexString) => parseInt(oneBasedNegatedIndexString, 10))
-            .map((oneBasedNegatedIndex) => {
-                return {
-                    index: Math.abs(oneBasedNegatedIndex) - 1, // convert to zero-based index
-                    isNegated: oneBasedNegatedIndex < 0,
-                };
-            });
+    public static fromCNFFileIndices(oneBaseNegatedIndices: number[]) {
+        const variables = oneBaseNegatedIndices.map((oneBasedNegatedIndex) => {
+            return {
+                index: Math.abs(oneBasedNegatedIndex) - 1, // convert to zero-based index
+                isNegated: oneBasedNegatedIndex < 0,
+            };
+        });
         return new CNFClause(variables);
     }
 
     private variables: ICNFClauseVariable[];
 
     private constructor(variables: ICNFClauseVariable[]) {
-        // console.log(`Creating CNFClause ${variables.map((v) => `${v.isNegated ? "-" : ""}${v.index + 1}`)}`);
         this.variables = variables;
     }
 

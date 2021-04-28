@@ -10,7 +10,7 @@ export default class ChromosomeMutators {
         const geneCount = chromosome.getGeneCount();
         for (let i = 0; i < n; i++) {
             const randomIndex = Math.floor(Math.random() * geneCount);
-            result[randomIndex] = mutator(chromosome[randomIndex]);
+            result.setGeneAt(randomIndex, mutator(chromosome.getGeneAt(randomIndex)));
         }
         return result as TChromosome;
     }

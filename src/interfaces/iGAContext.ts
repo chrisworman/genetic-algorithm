@@ -1,9 +1,9 @@
 import IChromosome from "./iChromosome";
-import IGAProblem from "./iGAProblem";
 import IPopulation from "./iPopulation";
+import IProblem from "./iProblem";
 
 export default interface IGAContext<
-    TProblem extends IGAProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome, TGene>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {

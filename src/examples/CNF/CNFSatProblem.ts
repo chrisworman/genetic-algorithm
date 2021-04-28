@@ -1,8 +1,8 @@
-import IGAProblem from "../../interfaces/iGAProblem";
+import IProblem from "../../interfaces/iProblem";
 import CNFChromosome from "./CNFChromosome";
 import CNFExpression from "./CNFExpression";
 
-export default class CNFSatProblem implements IGAProblem<CNFChromosome, boolean> {
+export default class CNFSatProblem implements IProblem<CNFChromosome, boolean> {
     public expression: CNFExpression;
     constructor(expression: CNFExpression) {
         console.log(`Creating CNFSatProblem with ${expression.getClauseCount()} clauses`);

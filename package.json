@@ -16,5 +16,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
+    "@types/functional-red-black-tree": "^1.0.0",
+    "functional-red-black-tree": "^1.0.1"
   }
 }

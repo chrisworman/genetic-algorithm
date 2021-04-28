@@ -23,6 +23,11 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
+"@types/functional-red-black-tree@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/functional-red-black-tree/-/functional-red-black-tree-1.0.0.tgz#3d4b3eae7323f1fe4e7fa7bbd97a359c3187172d"
+  integrity sha512-Zne5g06/Ywy55xUqcJLls7zVkme+tkRK4UPaW28eMWE6rYzeqirlKbCZqc0CF2Yb1bMl8Od2FVZOB2tDe/gTpg==
+
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
@@ -110,6 +115,11 @@ function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
   integrity sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
+
+functional-red-black-tree@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
+  integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
 glob@^7.1.1:
   version "7.1.6"

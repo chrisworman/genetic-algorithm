@@ -1,6 +1,9 @@
 export default interface IChromosome<TGene> {
-    age: number;
-    deserialize: (serialized: string) => IChromosome<TGene>;
+    getAge: () => number;
+    incrementAge: () => void;
+    getFitness: () => number;
+    setFitness: (fitness: number) => void;
+    deserialize: (serialized: string, resetAge?: boolean) => IChromosome<TGene>;
     serialize: () => string;
     clone: () => IChromosome<TGene>;
     getGeneCount: () => number;
