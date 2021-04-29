@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@types/functional-red-black-tree": "^1.0.0",
+    "@types/node": "^15.0.1",
     "functional-red-black-tree": "^1.0.1"
   }
 }
