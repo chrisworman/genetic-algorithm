@@ -58,7 +58,7 @@ export default class GA<
             const selection = this.selection.select(this.currentContext);
 
             // Apply elitism
-            let nextEpochChromosomes: TChromosome[] = this.currentContext.population.getNFittest(this.elitism);
+            const nextEpochChromosomes: TChromosome[] = this.currentContext.population.getNFittest(this.elitism);
 
             // Perform reproduction operators (crossover, mutations, etc.)
             this.operators.forEach((operator) => {
@@ -71,7 +71,8 @@ export default class GA<
                         this.currentContext.best = { chromosome, fitness };
                     }
                 });
-                nextEpochChromosomes = nextEpochChromosomes.concat(generatedChromosomes);
+                // nextEpochChromosomes = nextEpochChromosomes.concat(generatedChromosomes);
+                nextEpochChromosomes.push(...generatedChromosomes);
             });
 
             this.currentContext.population.newEpoch(nextEpochChromosomes);
