@@ -117,8 +117,17 @@ const main = () => {
         .build();
 
     const result = ga.run();
-
-    console.log(JSON.stringify(result.best.fitness, null, 2));
+    console.log(`Final best fitness: ${result.best?.fitness}`);
+    const bestChromosome = result.best?.chromosome;
+    if (bestChromosome) {
+        const buffer: string[] = [];
+        const geneCount = bestChromosome.getGeneCount();
+        for (let i = 0; i < geneCount; i++) {
+            const gene = bestChromosome.getGeneAt(i);
+            buffer.push(gene ? "0" : "1");
+        }
+        console.log(buffer.join(""));
+    }
 };
 
 main();
