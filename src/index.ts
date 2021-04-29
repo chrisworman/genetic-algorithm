@@ -127,6 +127,7 @@ const main = () => {
             buffer.push(gene ? "0" : "1");
         }
         console.log(buffer.join(""));
+        console.log(bestChromosome.serialize());
     }
 };
 

@@ -3,7 +3,7 @@ import IChromosome from "../interfaces/iChromosome";
 // A chromosome that efficiently stores boolean genes as binary.
 export default class BooleanChromosome implements IChromosome<boolean> {
 
-    private static fromGeneNumbers(geneNumbers: number[], numberOfGenes: number): BooleanChromosome {
+    private static fromGeneNumbers(numberOfGenes: number, geneNumbers: number[]): BooleanChromosome {
         const result = new BooleanChromosome();
         result.geneNumbers = geneNumbers;
         result.numberOfGenes = numberOfGenes;
@@ -46,27 +46,25 @@ export default class BooleanChromosome implements IChromosome<boolean> {
     }
 
     public clone(): IChromosome<boolean> {
-        const result = BooleanChromosome.fromGeneNumbers([...this.geneNumbers], this.numberOfGenes);
+        const result = BooleanChromosome.fromGeneNumbers(this.numberOfGenes, [...this.geneNumbers]);
         result.setFitness(this.fitness);
         return result;
     }
 
     public deserialize(serialized: string): IChromosome<boolean> {
-        const deserialized = JSON.parse(serialized);
-        const result = BooleanChromosome.fromGeneNumbers(
-            deserialized.geneNumbers,
-            deserialized.numberOfGenes,
-        );
-        result.setFitness(deserialized.fitness);
+        const [numberOfGenes, geneNumbers, fitness ] = JSON.parse(serialized);
+        const result = BooleanChromosome.fromGeneNumbers(geneNumbers, numberOfGenes);
+        result.setFitness(fitness);
         return result;
     }
 
     public serialize(): string {
         if (!this.cachedSerialized) {
-            this.cachedSerialized = JSON.stringify({
-                geneNumbers: this.geneNumbers,
-                numberOfGenes: this.numberOfGenes,
-            });
+            this.cachedSerialized = JSON.stringify([
+                this.numberOfGenes,
+                this.geneNumbers,
+                this.fitness,
+            ]);
         }
         return this.cachedSerialized;
     }
