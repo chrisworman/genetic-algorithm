@@ -2,7 +2,6 @@ import IChromosome from "../interfaces/iChromosome";
 
 // A chromosome that efficiently stores boolean genes as binary numbers.
 export default class BooleanChromosome implements IChromosome<boolean> {
-
     private static fromGeneNumbers(numberOfGenes: number, geneNumbers: number[]): BooleanChromosome {
         const result = new BooleanChromosome();
         result.geneNumbers = geneNumbers;
@@ -12,7 +11,7 @@ export default class BooleanChromosome implements IChromosome<boolean> {
 
     private age: number;
     private numberOfGenes: number;
-    private geneNumbers: number[];
+    private geneNumbers: number[]; // The bits of the genes
     private cachedSerialized: string | null;
     private fitness: number;
 
