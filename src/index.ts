@@ -1,14 +1,14 @@
 import fs from "fs";
-import CNFChromosome from "./examples/CNF/CNFChromosome";
-import CNFExpresion from "./examples/CNF/CNFExpression";
-import CNFSatProblem from "./examples/CNF/CNFSatProblem";
+import CNFChromosome from "./examples/CNFSat/CNFChromosome";
+import CNFExpresion from "./examples/CNFSat/CNFExpression";
+import CNFSatProblem from "./examples/CNFSat/CNFSatProblem";
 import GABuilder from "./gaBuilder";
 import ChromosomeCombiners from "./helpers/chromosomeCombiners";
 import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 5000000; // TODO: function of number of clauses / variable count
+const INITIAL_POPULATION_SIZE = 1000000; // TODO: function of number of clauses / variable count
 const MAX_EPOCH = 1500;
 const ELITISM = 5000;
 const SELECTION_SIZE = 10000;
