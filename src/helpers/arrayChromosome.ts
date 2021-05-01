@@ -3,13 +3,13 @@ import IChromosome from "../interfaces/iChromosome";
 // An array-based implementation of IChromosome
 // TODO: consider constraining TArrayChromosomeGene to be number | string | boolean since this solution
 // relies on serialization / deserialization.  Perhaps rename to PrimitiveArrayChromosome?
-export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosome<TArrayChromosomeGene> {
+export default class ArrayChromosome<TGene> implements IChromosome<TGene> {
     public age: number;
-    private array: TArrayChromosomeGene[];
+    private array: TGene[];
     private cachedSerialized: string | null;
     private fitness: number;
 
-    public constructor(initialArray?: TArrayChromosomeGene[]) {
+    public constructor(initialArray?: TGene[]) {
         this.age = 0;
         this.array = initialArray ? initialArray : [];
         this.cachedSerialized = null;
@@ -32,13 +32,13 @@ export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosom
         this.age++;
     }
 
-    public clone(): IChromosome<TArrayChromosomeGene> {
+    public clone(): IChromosome<TGene> {
         return this.deserialize(this.serialize());
     }
 
-    public deserialize(serialized: string): IChromosome<TArrayChromosomeGene> {
+    public deserialize(serialized: string): IChromosome<TGene> {
         const deserialized = JSON.parse(serialized);
-        const result = new ArrayChromosome<TArrayChromosomeGene>(deserialized.array);
+        const result = new ArrayChromosome<TGene>(deserialized.array);
         result.setFitness(deserialized.fitness);
         return result;
     }
@@ -57,20 +57,24 @@ export default class ArrayChromosome<TArrayChromosomeGene> implements IChromosom
         return this.array.length;
     }
 
-    public setGeneAt(index: number, gene: TArrayChromosomeGene) {
+    public setGeneAt(index: number, gene: TGene) {
         this.cachedSerialized = null;
         this.array[index] = gene;
     }
 
-    public getGeneAt(index: number): TArrayChromosomeGene {
+    public getGeneAt(index: number): TGene {
         return this.array[index];
     }
 
-    public getRandomGene(): TArrayChromosomeGene {
+    public getRandomGene(): TGene {
         return this.getGeneAt(this.getRandomGeneIndex());
     }
 
     public getRandomGeneIndex(): number {
        return Math.floor(Math.random() * this.getGeneCount());
+    }
+
+    public toArray(): TGene[] {
+        return [ ...this.array ];
     }
 }

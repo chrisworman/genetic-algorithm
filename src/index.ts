@@ -8,10 +8,10 @@ import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 1000000; // TODO: function of number of clauses / variable count
+const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
 const MAX_EPOCH = 1500;
-const ELITISM = 5000;
-const SELECTION_SIZE = 10000;
+const ELITISM = 2500;
+const SELECTION_SIZE = 5000;
 const MAX_GENES_MUTATED = 3; // TODO: function of number of variables
 
 const main = () => {
@@ -56,59 +56,55 @@ const main = () => {
         // Traditional Mutation
         .withOperator({
             operate: (context) => {
-                const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of context.selection) {
-                    const mutatedChromosome = ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>
-                    (
-                        chromosome,
-                        Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
-                        (a) => !a,
-                    );
-                    mutatedChromosomes.push(mutatedChromosome);
-                }
-                return mutatedChromosomes;
+                return ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>(
+                    context.selection,
+                    (a) => !a,
+                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
+                );
             },
         })
         // Mutation targeting variables from unsatisfied clauses
         .withOperator({
             operate: (context) => {
-                const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of context.selection) {
-                    const truthAssignments: boolean[] = [];
-                    const geneCount = chromosome.getGeneCount();
-                    for (let i = 0; i < geneCount; i++) {
-                        truthAssignments.push(chromosome.getGeneAt(i));
-                    }
-                    const unsatisfiedClauses = context.problem.expression.getUnsatisfiedClauses(truthAssignments);
-                    const unsatisfiedVariableIndices: Set<number> = new Set();
-                    unsatisfiedClauses.forEach((c) => {
-                        c.getVariables().forEach((v) => unsatisfiedVariableIndices.add(v.index));
-                    });
-                    const mutatedChromosome = ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>
-                    (
-                        chromosome,
-                        Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
-                        (a) => !a,
-                        Array.from(unsatisfiedVariableIndices),
-                    );
-                    mutatedChromosomes.push(mutatedChromosome);
-                }
-                return mutatedChromosomes;
+                return ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>(
+                    context.selection,
+                    (a) => !a,
+                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
+                    (chromosome) => {
+                        const clauses = context.problem.expression.getUnsatisfiedClauses(chromosome.toArray());
+                        const variableIndices: Set<number> = new Set();
+                        clauses.forEach((c) => {
+                            c.getVariables().forEach((v) => variableIndices.add(v.index));
+                        });
+                        return Array.from(variableIndices);
+                    },
+                );
             },
         })
         // Swap Mutation
         .withOperator({
             operate: (context) => {
-                const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of context.selection) {
-                    const mutatedChromosome = ChromosomeMutators.swapGenes<CNFChromosome, boolean>
-                    (
-                        chromosome,
-                        Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
-                    );
-                    mutatedChromosomes.push(mutatedChromosome);
-                }
-                return mutatedChromosomes;
+                return ChromosomeMutators.swapGenes<CNFChromosome, boolean>(
+                    context.selection,
+                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
+                );
+            },
+        })
+        // Swap mutation targeting variables from unsatisfied clauses
+        .withOperator({
+            operate: (context) => {
+                return ChromosomeMutators.swapGenes<CNFChromosome, boolean>(
+                    context.selection,
+                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
+                    (chromosome) => {
+                        const clauses = context.problem.expression.getUnsatisfiedClauses(chromosome.toArray());
+                        const variables: Set<number> = new Set();
+                        clauses.forEach((c) => {
+                            c.getVariables().forEach((v) => variables.add(v.index));
+                        });
+                        return Array.from(variables);
+                    },
+                );
             },
         })
         // Alternating Crossover

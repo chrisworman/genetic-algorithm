@@ -2,44 +2,55 @@ import IChromosome from "../interfaces/iChromosome";
 
 export default class ChromosomeMutators {
     public static applyGeneMutator<TChromosome extends IChromosome<TGene>, TGene>(
-        chromosome: TChromosome,
-        numberOfMutations: number,
-        mutator: (item: TGene) => TGene,
-        targetGeneIndices?: number[],
-    ): TChromosome {
-        const result = chromosome.clone();
-        const geneCount = chromosome.getGeneCount();
-        for (let i = 0; i < numberOfMutations; i++) {
-            const randomIndex = ChromosomeMutators.getRandomGeneIndex(geneCount, targetGeneIndices);
-            result.setGeneAt(randomIndex, mutator(chromosome.getGeneAt(randomIndex)));
-        }
-        return result as TChromosome;
+        chromosomes: TChromosome[],
+        mutate: (item: TGene) => TGene,
+        getMutationCount: number | ((chromosome: TChromosome) => number),
+        getTargetGeneIndices?: (chromosome: TChromosome) => number[],
+    ): TChromosome[] {
+        return chromosomes.map((chromosome) => {
+            const clone = chromosome.clone() as TChromosome;
+            const geneCount = chromosome.getGeneCount();
+            const mutationCount = typeof getMutationCount === "number"
+                ? getMutationCount
+                : getMutationCount(chromosome);
+            for (let i = 0; i < mutationCount; i++) {
+                const randomIndex = ChromosomeMutators.getRandomGeneIndex(chromosome, getTargetGeneIndices);
+                clone.setGeneAt(randomIndex, mutate(chromosome.getGeneAt(randomIndex)));
+            }
+            return clone;
+        });
     }
 
     public static swapGenes<TChromosome extends IChromosome<TGene>, TGene>(
-        chromosome: TChromosome,
-        numberOfSwaps: number,
-        targetGeneIndices?: number[],
-    ): TChromosome {
-        const result = chromosome.clone();
-        const geneCount = chromosome.getGeneCount();
-        for (let i = 0; i < numberOfSwaps; i++) {
-            const r1 = ChromosomeMutators.getRandomGeneIndex(geneCount, targetGeneIndices);
-            const r2 = ChromosomeMutators.getRandomGeneIndex(geneCount, targetGeneIndices);
-            const r1Gene = result.getGeneAt(r1);
-            const r2Gene = result.getGeneAt(r2);
-            result.setGeneAt(r1, r2Gene);
-            result.setGeneAt(r2, r1Gene);
-        }
-        return result as TChromosome;
+        chromosomes: TChromosome[],
+        getNumberOfSwaps: number | ((chromosome: TChromosome) => number),
+        getTargetGeneIndices?: (chromosome: TChromosome) => number[],
+    ): TChromosome[] {
+        return chromosomes.map((chromosome) => {
+            const result = chromosome.clone() as TChromosome;
+            const swaps = typeof getNumberOfSwaps === "number" ? getNumberOfSwaps : getNumberOfSwaps(chromosome);
+            for (let i = 0; i < swaps; i++) {
+                const r1 = ChromosomeMutators.getRandomGeneIndex(chromosome, getTargetGeneIndices);
+                const r2 = ChromosomeMutators.getRandomGeneIndex(chromosome, getTargetGeneIndices);
+                const r1Gene = result.getGeneAt(r1);
+                const r2Gene = result.getGeneAt(r2);
+                result.setGeneAt(r1, r2Gene);
+                result.setGeneAt(r2, r1Gene);
+            }
+            return result;
+        });
     }
 
-    private static getRandomGeneIndex(geneCount: number, targetGeneIndices?: number[]): number {
-        if (targetGeneIndices) {
-            const randomTargetGeneIndex = Math.floor(Math.random() * targetGeneIndices.length);
-            return targetGeneIndices[randomTargetGeneIndex];
+    private static getRandomGeneIndex<TChromosome extends IChromosome<TGene>, TGene>(
+        chromosome: TChromosome,
+        getTargetGeneIndices?: (chromosome: TChromosome) => number[],
+    ): number {
+        if (getTargetGeneIndices) {
+            const targetIndices = getTargetGeneIndices(chromosome);
+            const randomTargetGeneIndex = Math.floor(Math.random() * targetIndices.length);
+            return targetIndices[randomTargetGeneIndex];
         }
 
-        return Math.floor(Math.random() * geneCount);
+        return Math.floor(Math.random() * chromosome.getGeneCount());
     }
 }
