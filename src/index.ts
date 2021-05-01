@@ -118,7 +118,20 @@ const main = () => {
                 const generatedChromosomes: CNFChromosome[] = [];
                 for (const c1 of selection) {
                     const c2 = selection[Math.floor(Math.random() * selection.length)];
-                    const [m1, m2] = ChromosomeCombiners.alternateGenes(c1, c2);
+                    const [m1, m2] = ChromosomeCombiners.alternate(c1, c2);
+                    generatedChromosomes.push(m1);
+                    generatedChromosomes.push(m2);
+                }
+                return generatedChromosomes;
+            },
+        })
+        // Random Alternating Crossover
+        .withOperator({
+            operate: (context, selection) => {
+                const generatedChromosomes: CNFChromosome[] = [];
+                for (const c1 of selection) {
+                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                    const [m1, m2] = ChromosomeCombiners.randomAlternate(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
                 }
@@ -131,7 +144,7 @@ const main = () => {
                 const generatedChromosomes: CNFChromosome[] = [];
                 for (const c1 of selection) {
                     const c2 = selection[Math.floor(Math.random() * selection.length)];
-                    const [m1, m2] = ChromosomeCombiners.crossover(c1, c2);
+                    const [m1, m2] = ChromosomeCombiners.crossover(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
                 }
