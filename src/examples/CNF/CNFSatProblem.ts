@@ -4,8 +4,9 @@ import CNFExpression from "./CNFExpression";
 
 export default class CNFSatProblem implements IProblem<CNFChromosome, boolean> {
     public expression: CNFExpression;
+
     constructor(expression: CNFExpression) {
-        console.log(`Creating CNFSatProblem with ${expression.getClauseCount()} clauses`);
+        console.log(`Creating CNFSatProblem with ${expression.getClauseCount()} clauses and ${expression.getVariableCount()} variables`);
         this.expression = expression;
     }
 

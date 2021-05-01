@@ -32,7 +32,6 @@ export default class CNFExpresion {
         if (currentIndices.length > 0) {
             clauses.push(CNFClause.fromCNFFileIndices(currentIndices));
         }
-        console.log(`Creating CNF Expression with ${variableCount} variables and ${clauses.length} clauses`);
         return new CNFExpresion(variableCount, clauses);
     }
 
