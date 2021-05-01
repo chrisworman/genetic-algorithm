@@ -3,8 +3,8 @@ import ICNFClauseVariable from "./iCNFClauseVariable";
 // eg. (~x2 || x3 || x4)
 export default class CNFClause {
     // https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html
-    public static fromCNFFileIndices(oneBaseNegatedIndices: number[]) {
-        const variables = oneBaseNegatedIndices.map((oneBasedNegatedIndex) => {
+    public static fromCNFFileIndices(oneBasedNegatedIndices: number[]) {
+        const variables = oneBasedNegatedIndices.map((oneBasedNegatedIndex) => {
             return {
                 index: Math.abs(oneBasedNegatedIndex) - 1, // convert to zero-based index
                 isNegated: oneBasedNegatedIndex < 0,
