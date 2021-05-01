@@ -1,4 +1,4 @@
-import ICNFClauseVariable from "./ICNFClauseVariable";
+import ICNFClauseVariable from "./iCNFClauseVariable";
 
 // eg. (~x2 || x3 || x4)
 export default class CNFClause {
@@ -27,5 +27,9 @@ export default class CNFClause {
             }
         }
         return false;
+    }
+
+    public getVariables(): ICNFClauseVariable[] {
+        return [...this.variables];
     }
 }

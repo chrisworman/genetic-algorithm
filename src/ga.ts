@@ -11,10 +11,10 @@ export default class GA<
     TGene,
 > {
     private problem: TProblem;
-    private elitism: number;
     private initialPopulation: IPopulation<TChromosome, TGene>;
-    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
+    private elitism: number;
     private selection: ISelection<TProblem, TChromosome, TGene>;
+    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
     private currentContext: IGAContext<TProblem, TChromosome, TGene>;
 

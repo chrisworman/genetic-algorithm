@@ -61,4 +61,8 @@ export default class CNFExpresion {
         }
         return satisfied;
     }
+
+    public getUnsatisfiedClauses(truthAssignments: boolean[]): CNFClause[] {
+        return this.clauses.filter((c) => !c.isSatisfied(truthAssignments));
+    }
 }

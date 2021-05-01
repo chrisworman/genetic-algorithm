@@ -8,11 +8,11 @@ import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
+const INITIAL_POPULATION_SIZE = 5000000; // TODO: function of number of clauses / variable count
 const MAX_EPOCH = 1500;
-const ELITISM = 3000;
-const SELECTION_SIZE = 5000;
-const MAX_GENES_MUTATED = 8; // TODO: function of number of variables
+const ELITISM = 5000;
+const SELECTION_SIZE = 10000;
+const MAX_GENES_MUTATED = 3; // TODO: function of number of variables
 
 const main = () => {
     const [ , , flag, fileName ] = process.argv;
@@ -27,7 +27,8 @@ const main = () => {
 
     // Read CNF file and create CNF SAT instance
     const cnfFileText = fs.readFileSync(fileName, "utf8");
-    const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(cnfFileText));
+    const cnfExpresion = CNFExpresion.fromCNFFileText(cnfFileText);
+    const problem: CNFSatProblem = new CNFSatProblem(cnfExpresion);
 
     console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes`);
     const initialChromosomes: CNFChromosome[] = [];
@@ -63,6 +64,33 @@ const main = () => {
                         chromosome,
                         Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
                         (a) => !a,
+                    );
+                    mutatedChromosomes.push(mutatedChromosome);
+                }
+                return mutatedChromosomes;
+            },
+        })
+        // Mutation targeting variables from unsatisfied clauses
+        .withOperator({
+            operate: (context, selection) => {
+                const mutatedChromosomes: CNFChromosome[] = [];
+                for (const chromosome of selection) {
+                    const truthAssignments: boolean[] = [];
+                    const geneCount = chromosome.getGeneCount();
+                    for (let i = 0; i < geneCount; i++) {
+                        truthAssignments.push(chromosome.getGeneAt(i));
+                    }
+                    const unsatisfiedClauses = cnfExpresion.getUnsatisfiedClauses(truthAssignments);
+                    const unsatisfiedVariableIndices: Set<number> = new Set();
+                    unsatisfiedClauses.forEach((c) => {
+                        c.getVariables().forEach((v) => unsatisfiedVariableIndices.add(v.index));
+                    });
+                    const mutatedChromosome = ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>
+                    (
+                        chromosome,
+                        Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
+                        (a) => !a,
+                        Array.from(unsatisfiedVariableIndices),
                     );
                     mutatedChromosomes.push(mutatedChromosome);
                 }
