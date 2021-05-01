@@ -20,6 +20,10 @@ export default class CachedFitnessGAContext<
         this.population = initialPopulation;
     }
 
+    public getRandomSelection(): TChromosome {
+        return this.selection[Math.floor(Math.random() * this.selection.length)];
+    }
+
     public getFitness(chromosome) {
         if (this.fitnessCache.size > this.maxCacheSize) {
             this.fitnessCache = new Map<string, number>();

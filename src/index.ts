@@ -8,7 +8,7 @@ import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
+const INITIAL_POPULATION_SIZE = 1000000; // TODO: function of number of clauses / variable count
 const MAX_EPOCH = 1500;
 const ELITISM = 2500;
 const SELECTION_SIZE = 5000;
@@ -125,7 +125,7 @@ const main = () => {
             operate: (context) => {
                 const generatedChromosomes: CNFChromosome[] = [];
                 for (const c1 of context.selection) {
-                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
+                    const c2 = context.getRandomSelection();
                     const [m1, m2] = ChromosomeCombiners.randomAlternate(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
@@ -138,7 +138,7 @@ const main = () => {
             operate: (context) => {
                 const generatedChromosomes: CNFChromosome[] = [];
                 for (const c1 of context.selection) {
-                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
+                    const c2 = context.getRandomSelection();
                     const [m1, m2] = ChromosomeCombiners.crossover(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
@@ -152,11 +152,12 @@ const main = () => {
         })
         .build();
 
-    const result = ga.run();
-    if (result.fittest) {
-        console.log(`Final best fitness: ${result.fittest.getFitness()}`);
-        console.log(result.fittest.toString());
-        console.log(result.fittest.serialize());
+    const { fittest } = ga.run();
+
+    if (fittest) {
+        console.log(`Final best fitness: ${fittest.getFitness()}`);
+        console.log(fittest.toString());
+        console.log(fittest.serialize());
     } else {
         console.log(`No solution found`);
     }

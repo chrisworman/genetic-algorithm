@@ -11,5 +11,6 @@ export default interface IGAContext<
     population: IPopulation<TChromosome, TGene>;
     fittest?: TChromosome;
     selection: TChromosome[];
+    getRandomSelection: () => TChromosome;
     getFitness: (gene: TChromosome) => number;
 }
