@@ -12,10 +12,10 @@ export default class GABuilder<
     TGene,
 > {
     private problem: TProblem;
-    private elitism: number;
     private initialPopulation: IPopulation<TChromosome, TGene>;
-    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
+    private elitism: number;
     private selector: ISelector<TProblem, TChromosome, TGene>;
+    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
 
     public constructor() {
@@ -65,10 +65,10 @@ export default class GABuilder<
     public build(): GA<TProblem, TChromosome, TGene> {
         return new GA<TProblem, TChromosome, TGene>(
             this.problem,
-            this.elitism,
             this.initialPopulation,
-            this.operators,
+            this.elitism,
             this.selector,
+            this.operators,
             this.finishCondition,
         );
     }

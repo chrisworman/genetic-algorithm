@@ -20,17 +20,17 @@ export default class GA<
 
     constructor(
         problem: TProblem,
-        elitism: number,
         initialPopulation: IPopulation<TChromosome, TGene>,
-        operators: Array<IOperator<TProblem, TChromosome, TGene>>,
+        elitism: number,
         selector: ISelector<TProblem, TChromosome, TGene>,
+        operators: Array<IOperator<TProblem, TChromosome, TGene>>,
         finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
     ) {
         this.problem = problem;
-        this.elitism = elitism;
         this.initialPopulation = initialPopulation;
-        this.operators = operators;
+        this.elitism = elitism;
         this.selector = selector;
+        this.operators = operators;
         this.finishCondition = finishCondition;
     }
 
