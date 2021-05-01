@@ -2,7 +2,7 @@ import IChromosome from "./iChromosome";
 import IGAContext from "./iGAContext";
 import IProblem from "./iProblem";
 
-export default interface ISelection<
+export default interface ISelector<
     TProblem extends IProblem<TChromosome, TGene>,
     TChromosome extends IChromosome<TGene>,
     TGene,

@@ -4,7 +4,7 @@ import IGAContext from "./interfaces/iGAContext";
 import IOperator from "./interfaces/iOperator";
 import IPopulation from "./interfaces/iPopulation";
 import IProblem from "./interfaces/iProblem";
-import ISelection from "./interfaces/iSelection";
+import ISelector from "./interfaces/iSelector";
 
 export default class GABuilder<
     TProblem extends IProblem<TChromosome, TGene>,
@@ -15,7 +15,7 @@ export default class GABuilder<
     private elitism: number;
     private initialPopulation: IPopulation<TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
-    private selection: ISelection<TProblem, TChromosome, TGene>;
+    private selector: ISelector<TProblem, TChromosome, TGene>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
 
     public constructor() {
@@ -41,10 +41,10 @@ export default class GABuilder<
         return this;
     }
 
-    public withSelection(
-        selection: ISelection<TProblem, TChromosome, TGene>,
+    public withSelector(
+        selector: ISelector<TProblem, TChromosome, TGene>,
     ): GABuilder<TProblem, TChromosome, TGene> {
-        this.selection = selection;
+        this.selector = selector;
         return this;
     }
 
@@ -68,7 +68,7 @@ export default class GABuilder<
             this.elitism,
             this.initialPopulation,
             this.operators,
-            this.selection,
+            this.selector,
             this.finishCondition,
         );
     }

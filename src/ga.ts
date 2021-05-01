@@ -3,7 +3,7 @@ import IGAContext from "./interfaces/iGAContext";
 import IOperator from "./interfaces/iOperator";
 import IPopulation from "./interfaces/iPopulation";
 import IProblem from "./interfaces/iProblem";
-import ISelection from "./interfaces/iSelection";
+import ISelector from "./interfaces/iSelector";
 
 export default class GA<
     TProblem extends IProblem<TChromosome, TGene>,
@@ -13,7 +13,7 @@ export default class GA<
     private problem: TProblem;
     private initialPopulation: IPopulation<TChromosome, TGene>;
     private elitism: number;
-    private selection: ISelection<TProblem, TChromosome, TGene>;
+    private selector: ISelector<TProblem, TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
     private currentContext: IGAContext<TProblem, TChromosome, TGene>;
@@ -23,14 +23,14 @@ export default class GA<
         elitism: number,
         initialPopulation: IPopulation<TChromosome, TGene>,
         operators: Array<IOperator<TProblem, TChromosome, TGene>>,
-        selection: ISelection<TProblem, TChromosome, TGene>,
+        selector: ISelector<TProblem, TChromosome, TGene>,
         finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
     ) {
         this.problem = problem;
         this.elitism = elitism;
         this.initialPopulation = initialPopulation;
         this.operators = operators;
-        this.selection = selection;
+        this.selector = selector;
         this.finishCondition = finishCondition;
     }
 
@@ -54,15 +54,15 @@ export default class GA<
             problem: this.problem,
         };
         do {
-            // Perform reproduction selection
-            const selection = this.selection.select(this.currentContext);
+            // Perform reproduction selector
+            const selector = this.selector.select(this.currentContext);
 
             // Apply elitism
             const nextEpochChromosomes: TChromosome[] = this.currentContext.population.getNFittest(this.elitism);
 
             // Perform reproduction operators (crossover, mutations, etc.)
             this.operators.forEach((operator) => {
-                const generatedChromosomes = operator.operate(this.currentContext, selection);
+                const generatedChromosomes = operator.operate(this.currentContext, selector);
                 // TODO: move to IPopulation.addIfNew
                 generatedChromosomes.forEach((chromosome) => {
                     const fitness = this.currentContext.getFitness(chromosome);

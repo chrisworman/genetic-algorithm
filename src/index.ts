@@ -49,7 +49,7 @@ const main = () => {
         .withProblem(problem)
         .withInitialPopulation(initialPopulation)
         .withElitism(ELITISM)
-        .withSelection({
+        .withSelector({
             select: (context) => {
                 return context.population.getNFittest(SELECTION_SIZE);
             },
