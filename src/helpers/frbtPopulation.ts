@@ -54,21 +54,6 @@ export default class FRBTPopulation<
         return result;
     }
 
-    // TODO
-    // public getNRandom(n: number): TChromosome[] {
-    //     const result: TChromosome[] = [];
-    //     const alreadySeenIndices: Set<number> = new Set();
-    //     const size = this.size();
-    //     let randomIndex: number;
-    //     for (let i = 0; i < Math.min(n, size); i++) {
-    //         do {
-    //             randomIndex = Math.floor(Math.random() * size);
-    //         } while (alreadySeenIndices.has(randomIndex));
-    //         alreadySeenIndices.add(randomIndex);
-    //         this.serializeToChromosome.
-    //     }
-    // }
-
     public size(): number {
         return this.serializeToChromosome.size;
     }
