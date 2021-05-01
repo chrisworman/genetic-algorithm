@@ -111,6 +111,16 @@ export default class BooleanChromosome implements IChromosome<boolean> {
        return Math.floor(Math.random() * this.getGeneCount());
     }
 
+    public toString(): string {
+        const buffer: string[] = [];
+        const geneCount = this.getGeneCount();
+        for (let i = 0; i < geneCount; i++) {
+            const gene = this.getGeneAt(i);
+            buffer.push(gene ? "0" : "1");
+        }
+        return buffer.join("");
+    }
+
     private getGeneNumberIndex(index: number): number {
         return Math.floor(index / 32);
     }

@@ -27,8 +27,7 @@ const main = () => {
 
     // Read CNF file and create CNF SAT instance
     const cnfFileText = fs.readFileSync(fileName, "utf8");
-    const cnfExpresion = CNFExpresion.fromCNFFileText(cnfFileText);
-    const problem: CNFSatProblem = new CNFSatProblem(cnfExpresion);
+    const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(cnfFileText));
 
     console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes`);
     const initialChromosomes: CNFChromosome[] = [];
@@ -56,9 +55,9 @@ const main = () => {
         })
         // Traditional Mutation
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of selection) {
+                for (const chromosome of context.selection) {
                     const mutatedChromosome = ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>
                     (
                         chromosome,
@@ -72,15 +71,15 @@ const main = () => {
         })
         // Mutation targeting variables from unsatisfied clauses
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of selection) {
+                for (const chromosome of context.selection) {
                     const truthAssignments: boolean[] = [];
                     const geneCount = chromosome.getGeneCount();
                     for (let i = 0; i < geneCount; i++) {
                         truthAssignments.push(chromosome.getGeneAt(i));
                     }
-                    const unsatisfiedClauses = cnfExpresion.getUnsatisfiedClauses(truthAssignments);
+                    const unsatisfiedClauses = context.problem.expression.getUnsatisfiedClauses(truthAssignments);
                     const unsatisfiedVariableIndices: Set<number> = new Set();
                     unsatisfiedClauses.forEach((c) => {
                         c.getVariables().forEach((v) => unsatisfiedVariableIndices.add(v.index));
@@ -99,9 +98,9 @@ const main = () => {
         })
         // Swap Mutation
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const mutatedChromosomes: CNFChromosome[] = [];
-                for (const chromosome of selection) {
+                for (const chromosome of context.selection) {
                     const mutatedChromosome = ChromosomeMutators.swapGenes<CNFChromosome, boolean>
                     (
                         chromosome,
@@ -114,10 +113,10 @@ const main = () => {
         })
         // Alternating Crossover
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const generatedChromosomes: CNFChromosome[] = [];
-                for (const c1 of selection) {
-                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                for (const c1 of context.selection) {
+                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
                     const [m1, m2] = ChromosomeCombiners.alternate(c1, c2);
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
@@ -127,10 +126,10 @@ const main = () => {
         })
         // Random Alternating Crossover
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const generatedChromosomes: CNFChromosome[] = [];
-                for (const c1 of selection) {
-                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                for (const c1 of context.selection) {
+                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
                     const [m1, m2] = ChromosomeCombiners.randomAlternate(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
@@ -140,10 +139,10 @@ const main = () => {
         })
         // Traditional Crossover
         .withOperator({
-            operate: (context, selection) => {
+            operate: (context) => {
                 const generatedChromosomes: CNFChromosome[] = [];
-                for (const c1 of selection) {
-                    const c2 = selection[Math.floor(Math.random() * selection.length)];
+                for (const c1 of context.selection) {
+                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
                     const [m1, m2] = ChromosomeCombiners.crossover(c1, c2, Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
@@ -152,23 +151,18 @@ const main = () => {
             },
         })
         .withFinishCondition((context) => {
-            return context.best?.fitness === context.problem.expression.getClauseCount() // satisfied
+            return context.fittest?.getFitness() === context.problem.expression.getClauseCount() // satisfied
                 || context.population.getEpoch() >= MAX_EPOCH; // max number of generations
         })
         .build();
 
     const result = ga.run();
-    console.log(`Final best fitness: ${result.best?.fitness}`);
-    const bestChromosome = result.best?.chromosome;
-    if (bestChromosome) {
-        const buffer: string[] = [];
-        const geneCount = bestChromosome.getGeneCount();
-        for (let i = 0; i < geneCount; i++) {
-            const gene = bestChromosome.getGeneAt(i);
-            buffer.push(gene ? "0" : "1");
-        }
-        console.log(buffer.join(""));
-        console.log(bestChromosome.serialize());
+    if (result.fittest) {
+        console.log(`Final best fitness: ${result.fittest.getFitness()}`);
+        console.log(result.fittest.toString());
+        console.log(result.fittest.serialize());
+    } else {
+        console.log(`No solution found`);
     }
 };
 

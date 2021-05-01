@@ -9,9 +9,7 @@ export default interface IGAContext<
 > {
     problem: TProblem;
     population: IPopulation<TChromosome, TGene>;
-    best?: {
-        chromosome: TChromosome;
-        fitness: number;
-    };
+    fittest?: TChromosome;
+    selection: TChromosome[];
     getFitness: (gene: TChromosome) => number;
 }

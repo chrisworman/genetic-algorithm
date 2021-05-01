@@ -7,8 +7,5 @@ export default interface IOperator<
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {
-    operate(
-        context: IGAContext<TProblem, TChromosome, TGene>,
-        selection: TChromosome[],
-    ): TChromosome[];
+    operate(context: IGAContext<TProblem, TChromosome, TGene>): TChromosome[];
 }
