@@ -1,4 +1,3 @@
-import GABuilder from "../gaBuilder";
 import { GARunEvent } from "./gaRunEvent";
 import IChromosome from "./iChromosome";
 import IGAContext from "./iGAContext";
@@ -10,37 +9,36 @@ import ISelector from "./iSelector";
 
 export default interface IGABuilder<
     TProblem extends IProblem<TChromosome>,
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > {
-    withProblem(problem: TProblem): GABuilder<TProblem, TChromosome, TGene>;
+    withProblem(problem: TProblem): IGABuilder<TProblem, TChromosome>;
 
     withContextFactory(
-        contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        contextFactory: IGAContextFactory<TProblem, TChromosome>,
+    ): IGABuilder<TProblem, TChromosome>;
 
     withElitism(getElitism: (
-        context: IGAContext<TProblem, TChromosome, TGene>) => number,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        context: IGAContext<TProblem, TChromosome>) => number,
+    ): IGABuilder<TProblem, TChromosome>;
 
     withInitialPopulation(
         initialPopulation: IPopulation<TChromosome>,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+    ): IGABuilder<TProblem, TChromosome>;
 
     withSelector(
-        selector: ISelector<TProblem, TChromosome, TGene>,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        selector: ISelector<TProblem, TChromosome>,
+    ): IGABuilder<TProblem, TChromosome>;
 
     withOperator(
-        operator: IOperator<TProblem, TChromosome, TGene>,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        operator: IOperator<TProblem, TChromosome>,
+    ): IGABuilder<TProblem, TChromosome>;
 
     withFinishCondition(
-        finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        finishCondition: (context: IGAContext<TProblem, TChromosome>) => boolean,
+    ): IGABuilder<TProblem, TChromosome>;
 
     on(
         event: GARunEvent,
-        handler: (context: IGAContext<TProblem, TChromosome, TGene>) => void,
-    ): GABuilder<TProblem, TChromosome, TGene>;
+        handler: (context: IGAContext<TProblem, TChromosome>) => void,
+    ): IGABuilder<TProblem, TChromosome>;
 }

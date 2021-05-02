@@ -4,9 +4,8 @@ import IProblem from "./iProblem";
 
 export default interface IOperator<
     TProblem extends IProblem<TChromosome>,
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > {
-    operate(context: IGAContext<TProblem, TChromosome, TGene>): TChromosome[];
+    operate(context: IGAContext<TProblem, TChromosome>): TChromosome[];
     getDescription(): string;
 }

@@ -5,11 +5,10 @@ import IProblem from "./iProblem";
 
 export default interface IGAContextFactory<
     TProblem extends IProblem<TChromosome>,
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > {
     createContext(
         problem: TProblem,
         initialPopulation: IPopulation<TChromosome>,
-    ): IGAContext<TProblem, TChromosome, TGene>;
+    ): IGAContext<TProblem, TChromosome>;
 }

@@ -37,7 +37,7 @@ const main = () => {
         randomChromosome.setFitness(problem.getFitness(randomChromosome));
         initialChromosomes.push(randomChromosome);
     }
-    const initialPopulation: FRBTPopulation<BooleanChromosome, boolean> = new FRBTPopulation(initialChromosomes);
+    const initialPopulation: FRBTPopulation<BooleanChromosome> = new FRBTPopulation(initialChromosomes);
 
     const gaBuilder: GABuilder<CNFSatProblem, BooleanChromosome, boolean> = new GABuilder();
     const ga = gaBuilder

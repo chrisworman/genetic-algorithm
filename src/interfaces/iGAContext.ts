@@ -5,14 +5,13 @@ import IProblem from "./iProblem";
 
 export default interface IGAContext<
     TProblem extends IProblem<TChromosome>,
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > {
     problem: TProblem;
     population: IPopulation<TChromosome>;
     fittest?: TChromosome;
     selection: TChromosome[];
-    currentOperator?: IOperator<TProblem, TChromosome, TGene>;
+    currentOperator?: IOperator<TProblem, TChromosome>;
     getRandomSelection: () => TChromosome;
     getFitness: (gene: TChromosome) => number;
 }

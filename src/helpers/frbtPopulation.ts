@@ -4,8 +4,7 @@ import IPopulation from "../interfaces/iPopulation";
 
 // A Functional red-black tree implementation of IPopulation
 export default class FRBTPopulation<
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > implements IPopulation<TChromosome> {
     private epoch: number;
     private serializeToChromosome: Map<string, TChromosome>;

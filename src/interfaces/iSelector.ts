@@ -4,8 +4,7 @@ import IProblem from "./iProblem";
 
 export default interface ISelector<
     TProblem extends IProblem<TChromosome>,
-    TChromosome extends IChromosome<TGene>,
-    TGene,
+    TChromosome extends IChromosome,
 > {
-    select(context: IGAContext<TProblem, TChromosome, TGene>): TChromosome[];
+    select(context: IGAContext<TProblem, TChromosome>): TChromosome[];
 }

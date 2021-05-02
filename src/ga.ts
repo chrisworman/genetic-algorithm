@@ -14,24 +14,24 @@ export default class GA<
     TGene,
 > {
     private problem: TProblem;
-    private contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>;
-    private currentContext: IGAContext<TProblem, TChromosome, TGene>;
+    private contextFactory: IGAContextFactory<TProblem, TChromosome>;
+    private currentContext: IGAContext<TProblem, TChromosome>;
     private initialPopulation: IPopulation<TChromosome>;
-    private getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number;
-    private selector: ISelector<TProblem, TChromosome, TGene>;
-    private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
-    private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
-    private eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome, TGene>>>;
+    private getElitism: (context: IGAContext<TProblem, TChromosome>) => number;
+    private selector: ISelector<TProblem, TChromosome>;
+    private operators: Array<IOperator<TProblem, TChromosome>>;
+    private finishCondition: (context: IGAContext<TProblem, TChromosome>) => boolean;
+    private eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome>>>;
 
     public constructor(
         problem: TProblem,
-        contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>,
+        contextFactory: IGAContextFactory<TProblem, TChromosome>,
         initialPopulation: IPopulation<TChromosome>,
-        getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number,
-        selector: ISelector<TProblem, TChromosome, TGene>,
-        operators: Array<IOperator<TProblem, TChromosome, TGene>>,
-        finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
-        eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome, TGene>>>,
+        getElitism: (context: IGAContext<TProblem, TChromosome>) => number,
+        selector: ISelector<TProblem, TChromosome>,
+        operators: Array<IOperator<TProblem, TChromosome>>,
+        finishCondition: (context: IGAContext<TProblem, TChromosome>) => boolean,
+        eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome>>>,
     ) {
         this.problem = problem;
         this.contextFactory = contextFactory;
@@ -43,7 +43,7 @@ export default class GA<
         this.eventHandlers = eventHandlers;
     }
 
-    public run(): IGAContext<TProblem, TChromosome, TGene> {
+    public run(): IGAContext<TProblem, TChromosome> {
         this.currentContext = this.contextFactory.createContext(this.problem, this.initialPopulation);
         do {
             // Perform reproduction selector
