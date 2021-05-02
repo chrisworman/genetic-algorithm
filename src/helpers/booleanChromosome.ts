@@ -4,7 +4,7 @@ import IChromosome from "../interfaces/iChromosome";
 export default class BooleanChromosome implements IChromosome<boolean> {
 
     public static createRandom(numberOfGenes: number): BooleanChromosome {
-        const truthAssignments: boolean[] = [];
+        const truthAssignments: boolean[] = new Array(numberOfGenes);
         for (let i = 0; i < numberOfGenes; i++) {
             truthAssignments[i] = Math.random() < 0.5;
         }
@@ -132,7 +132,7 @@ export default class BooleanChromosome implements IChromosome<boolean> {
 
     public toArray(): boolean[] {
         const geneCount = this.getGeneCount();
-        const result: boolean[] = new Array(geneCount);
+        const result: boolean[] = [];
         for (let i = 0; i < geneCount; i++) {
             result.push(this.getGeneAt(i));
         }

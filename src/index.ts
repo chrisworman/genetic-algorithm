@@ -26,19 +26,23 @@ const main = () => {
     }
 
     // Read CNF file and create CNF SAT instance
+    console.log("Creating CNFSatProblem ...");
     const cnfFileText = fs.readFileSync(fileName, "utf8");
     const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(cnfFileText));
+    console.log(`  ${problem.expression.getClauseCount()} clauses ${problem.expression.getVariableCount()} variables`);
 
-    console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes`);
-    const initialChromosomes: BooleanChromosome[] = [];
+    // Create the initial population
+    console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes ...`);
     const variableCount = problem.expression.getVariableCount();
+    const initialChromosomes: BooleanChromosome[] = new Array(variableCount);
     for (let i = 0; i < INITIAL_POPULATION_SIZE; i++) {
         const randomChromosome = BooleanChromosome.createRandom(variableCount);
         randomChromosome.setFitness(problem.getFitness(randomChromosome));
-        initialChromosomes.push(randomChromosome);
+        initialChromosomes[i] = randomChromosome;
     }
     const initialPopulation: FRBTPopulation<BooleanChromosome> = new FRBTPopulation(initialChromosomes);
 
+    // Build the genetic algorithm
     const gaBuilder: GABuilder<CNFSatProblem, BooleanChromosome, boolean> = new GABuilder();
     const ga = gaBuilder
         .withProblem(problem)
@@ -104,11 +108,12 @@ const main = () => {
         .withOperator({
             getDescription: () => "Variable single point crossover",
             operate: (context) => {
-                const generatedChromosomes: BooleanChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = new Array(context.selection.length * 2);
+                let i = 0;
                 for (const c1 of context.selection) {
                     const [m1, m2] = ChromosomeCombiners.crossover(c1, context.getRandomSelection(), Math.random());
-                    generatedChromosomes.push(m1);
-                    generatedChromosomes.push(m2);
+                    generatedChromosomes[i++] = m1;
+                    generatedChromosomes[i++] = m2;
                 }
                 return generatedChromosomes;
             },
@@ -116,11 +121,12 @@ const main = () => {
         .withOperator({
             getDescription: () => "Alternating Crossover",
             operate: (context) => {
-                const generatedChromosomes: BooleanChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = new Array(context.selection.length * 2);
+                let i = 0;
                 for (const c1 of context.selection) {
                     const [m1, m2] = ChromosomeCombiners.alternate(c1, context.getRandomSelection());
-                    generatedChromosomes.push(m1);
-                    generatedChromosomes.push(m2);
+                    generatedChromosomes[i++] = m1;
+                    generatedChromosomes[i++] = m2;
                 }
                 return generatedChromosomes;
             },
@@ -128,15 +134,16 @@ const main = () => {
         .withOperator({
             getDescription: () => "Random Alternating Crossover",
             operate: (context) => {
-                const generatedChromosomes: BooleanChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = new Array(context.selection.length * 2);
+                let i = 0;
                 for (const c1 of context.selection) {
                     const [m1, m2] = ChromosomeCombiners.randomAlternate(
                         c1,
                         context.getRandomSelection(),
                         Math.random(),
                     );
-                    generatedChromosomes.push(m1);
-                    generatedChromosomes.push(m2);
+                    generatedChromosomes[i++] = m1;
+                    generatedChromosomes[i++] = m2;
                 }
                 return generatedChromosomes;
             },

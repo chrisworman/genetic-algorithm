@@ -28,10 +28,9 @@ export default class GABuilder<
     private eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome>>>;
 
     public constructor() {
+        // Set reasonable defaults which can be overridden
         this.operators = [];
         this.eventHandlers = new Map();
-
-        // Set reasonable defaults which can be overwritten
         this.contextFactory = CachedFitnessGAContext.getFactory();
         this.selector = {
             select: (context) => context.population.getNFittest(GABuilder.DEFAULT_SELECTOR_N_FITTEST),
