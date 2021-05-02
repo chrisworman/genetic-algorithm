@@ -27,7 +27,7 @@ export default class BooleanChromosome implements IChromosome<boolean> {
     public constructor(bits?: boolean[]) {
         this.age = 0;
         this.cachedSerialized = null;
-        this.geneNumbers = [];
+        this.geneNumbers = bits ? new Array(Math.ceil(bits.length / 32)) : [];
         if (bits) {
             this.numberOfGenes = bits.length;
             bits.forEach((bit, index) => {
