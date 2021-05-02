@@ -2,7 +2,16 @@ import IChromosome from "../interfaces/iChromosome";
 
 // A chromosome that efficiently stores boolean genes as binary numbers.
 export default class BooleanChromosome implements IChromosome<boolean> {
-    private static fromGeneNumbers(numberOfGenes: number, geneNumbers: number[]): BooleanChromosome {
+
+    public static createRandom(numberOfGenes: number): BooleanChromosome {
+        const truthAssignments: boolean[] = [];
+        for (let i = 0; i < numberOfGenes; i++) {
+            truthAssignments[i] = Math.random() < 0.5;
+        }
+        return new BooleanChromosome(truthAssignments);
+    }
+
+    private static createFromGeneNumbers(numberOfGenes: number, geneNumbers: number[]): BooleanChromosome {
         const result = new BooleanChromosome();
         result.geneNumbers = geneNumbers;
         result.numberOfGenes = numberOfGenes;
@@ -45,14 +54,14 @@ export default class BooleanChromosome implements IChromosome<boolean> {
     }
 
     public clone(): IChromosome<boolean> {
-        const result = BooleanChromosome.fromGeneNumbers(this.numberOfGenes, [...this.geneNumbers]);
+        const result = BooleanChromosome.createFromGeneNumbers(this.numberOfGenes, [...this.geneNumbers]);
         result.setFitness(this.fitness);
         return result;
     }
 
     public deserialize(serialized: string): IChromosome<boolean> {
         const [numberOfGenes, geneNumbers, fitness ] = JSON.parse(serialized);
-        const result = BooleanChromosome.fromGeneNumbers(geneNumbers, numberOfGenes);
+        const result = BooleanChromosome.createFromGeneNumbers(geneNumbers, numberOfGenes);
         result.setFitness(fitness);
         return result;
     }

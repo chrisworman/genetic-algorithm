@@ -1,8 +1,8 @@
 import fs from "fs";
-import CNFChromosome from "./examples/CNFSat/CNFChromosome";
 import CNFExpresion from "./examples/CNFSat/CNFExpression";
 import CNFSatProblem from "./examples/CNFSat/CNFSatProblem";
 import GABuilder from "./gaBuilder";
+import BooleanChromosome from "./helpers/booleanChromosome";
 import ChromosomeCombiners from "./helpers/chromosomeCombiners";
 import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
@@ -30,24 +30,20 @@ const main = () => {
     const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(cnfFileText));
 
     console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes`);
-    const initialChromosomes: CNFChromosome[] = [];
+    const initialChromosomes: BooleanChromosome[] = [];
     const variableCount = problem.expression.getVariableCount();
     for (let i = 0; i < INITIAL_POPULATION_SIZE; i++) {
-        const truthAssignments: boolean[] = [];
-        for (let j = 0; j < variableCount; j++) {
-            truthAssignments[j] = Math.random() < 0.5;
-        }
-        const randomChromosome = new CNFChromosome(truthAssignments);
+        const randomChromosome = BooleanChromosome.createRandom(variableCount);
         randomChromosome.setFitness(problem.getFitness(randomChromosome));
         initialChromosomes.push(randomChromosome);
     }
-    const initialPopulation: FRBTPopulation<CNFChromosome, boolean> = new FRBTPopulation(initialChromosomes);
+    const initialPopulation: FRBTPopulation<BooleanChromosome, boolean> = new FRBTPopulation(initialChromosomes);
 
-    const gaBuilder: GABuilder<CNFSatProblem, CNFChromosome, boolean> = new GABuilder();
+    const gaBuilder: GABuilder<CNFSatProblem, BooleanChromosome, boolean> = new GABuilder();
     const ga = gaBuilder
         .withProblem(problem)
         .withInitialPopulation(initialPopulation)
-        .withElitism((context) => ELITISM)
+        .withElitism(() => ELITISM)
         .withSelector({
             select: (context) => {
                 return context.population.getNFittest(SELECTION_SIZE);
@@ -56,7 +52,7 @@ const main = () => {
         .withOperator({
             getDescription: () => "Mutation",
             operate: (context) => {
-                return ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>(
+                return ChromosomeMutators.applyGeneMutator<BooleanChromosome, boolean>(
                     context.selection,
                     (a) => !a,
                     () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
@@ -66,17 +62,15 @@ const main = () => {
         .withOperator({
             getDescription: () => "Mutation targeting variables from unsatisfied clauses",
             operate: (context) => {
-                return ChromosomeMutators.applyGeneMutator<CNFChromosome, boolean>(
+                return ChromosomeMutators.applyGeneMutator<BooleanChromosome, boolean>(
                     context.selection,
                     (a) => !a,
                     () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
                     (chromosome) => {
-                        const clauses = context.problem.expression.getUnsatisfiedClauses(chromosome.toArray());
-                        const variableIndices: Set<number> = new Set();
-                        clauses.forEach((c) => {
-                            c.getVariables().forEach((v) => variableIndices.add(v.index));
-                        });
-                        return Array.from(variableIndices);
+                        // Get the unsatisfied clauses for `chromosome`, target the variable indices from those clauses
+                        return context.problem.expression.getUnsatisfiedClauses(chromosome.toArray())
+                            .map((c) => c.getVariables().map((v) => v.index))
+                            .reduce((p, c) => p.concat(c));
                     },
                 );
             },
@@ -84,7 +78,7 @@ const main = () => {
         .withOperator({
             getDescription: () => "Swap Mutation",
             operate: (context) => {
-                return ChromosomeMutators.swapGenes<CNFChromosome, boolean>(
+                return ChromosomeMutators.swapGenes<BooleanChromosome, boolean>(
                     context.selection,
                     () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
                 );
@@ -93,7 +87,7 @@ const main = () => {
         .withOperator({
             getDescription: () => "Swap mutation targeting variables from unsatisfied clauses",
             operate: (context) => {
-                return ChromosomeMutators.swapGenes<CNFChromosome, boolean>(
+                return ChromosomeMutators.swapGenes<BooleanChromosome, boolean>(
                     context.selection,
                     () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
                     (chromosome) => {
@@ -110,10 +104,9 @@ const main = () => {
         .withOperator({
             getDescription: () => "Variable single point crossover",
             operate: (context) => {
-                const generatedChromosomes: CNFChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = [];
                 for (const c1 of context.selection) {
-                    const c2 = context.getRandomSelection();
-                    const [m1, m2] = ChromosomeCombiners.crossover(c1, c2, Math.random());
+                    const [m1, m2] = ChromosomeCombiners.crossover(c1, context.getRandomSelection(), Math.random());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
                 }
@@ -123,10 +116,9 @@ const main = () => {
         .withOperator({
             getDescription: () => "Alternating Crossover",
             operate: (context) => {
-                const generatedChromosomes: CNFChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = [];
                 for (const c1 of context.selection) {
-                    const c2 = context.selection[Math.floor(Math.random() * context.selection.length)];
-                    const [m1, m2] = ChromosomeCombiners.alternate(c1, c2);
+                    const [m1, m2] = ChromosomeCombiners.alternate(c1, context.getRandomSelection());
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
                 }
@@ -136,10 +128,13 @@ const main = () => {
         .withOperator({
             getDescription: () => "Random Alternating Crossover",
             operate: (context) => {
-                const generatedChromosomes: CNFChromosome[] = [];
+                const generatedChromosomes: BooleanChromosome[] = [];
                 for (const c1 of context.selection) {
-                    const c2 = context.getRandomSelection();
-                    const [m1, m2] = ChromosomeCombiners.randomAlternate(c1, c2, Math.random());
+                    const [m1, m2] = ChromosomeCombiners.randomAlternate(
+                        c1,
+                        context.getRandomSelection(),
+                        Math.random(),
+                    );
                     generatedChromosomes.push(m1);
                     generatedChromosomes.push(m2);
                 }

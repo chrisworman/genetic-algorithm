@@ -1,8 +1,8 @@
+import BooleanChromosome from "../../helpers/booleanChromosome";
 import IProblem from "../../interfaces/iProblem";
-import CNFChromosome from "./CNFChromosome";
 import CNFExpression from "./CNFExpression";
 
-export default class CNFSatProblem implements IProblem<CNFChromosome, boolean> {
+export default class CNFSatProblem implements IProblem<BooleanChromosome, boolean> {
     public expression: CNFExpression;
 
     constructor(expression: CNFExpression) {
@@ -10,7 +10,7 @@ export default class CNFSatProblem implements IProblem<CNFChromosome, boolean> {
         this.expression = expression;
     }
 
-    public getFitness(chromosome: CNFChromosome): number {
+    public getFitness(chromosome: BooleanChromosome): number {
         const truthAssignments: boolean[] = [];
         const geneCount = chromosome.getGeneCount();
         for (let i = 0; i < geneCount; i++) {
