@@ -54,7 +54,7 @@ export default class FRBTPopulation<
         return result;
     }
 
-    public size(): number {
+    public getSize(): number {
         return this.serializeToChromosome.size;
     }
 

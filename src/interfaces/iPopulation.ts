@@ -4,7 +4,7 @@ export default interface IPopulation<TChromosome extends IChromosome<TGene>, TGe
     getEpoch: () => number;
     newEpoch: (newChromosomes: TChromosome[]) => void;
     getNFittest: (n: number) => TChromosome[];
-    size: () => number;
+    getSize: () => number;
     removeNLeastFit: (n: number) => void;
     removeUnfit: (minFitness: number) => void;
 }

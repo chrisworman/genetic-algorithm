@@ -1,6 +1,8 @@
+import { GARunEvent } from "./interfaces/gaRunEvent";
 import IChromosome from "./interfaces/iChromosome";
 import IGAContext from "./interfaces/iGAContext";
 import IGAContextFactory from "./interfaces/iGAContextFactory";
+import { IGARunEventHandler } from "./interfaces/iGARunEventHandler";
 import IOperator from "./interfaces/iOperator";
 import IPopulation from "./interfaces/iPopulation";
 import IProblem from "./interfaces/iProblem";
@@ -15,27 +17,30 @@ export default class GA<
     private contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>;
     private currentContext: IGAContext<TProblem, TChromosome, TGene>;
     private initialPopulation: IPopulation<TChromosome, TGene>;
-    private elitism: number;
+    private getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number;
     private selector: ISelector<TProblem, TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
+    private eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome, TGene>>>;
 
-    constructor(
+    public constructor(
         problem: TProblem,
         contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>,
         initialPopulation: IPopulation<TChromosome, TGene>,
-        elitism: number,
+        getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number,
         selector: ISelector<TProblem, TChromosome, TGene>,
         operators: Array<IOperator<TProblem, TChromosome, TGene>>,
         finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean,
+        eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome, TGene>>>,
     ) {
         this.problem = problem;
         this.contextFactory = contextFactory;
         this.initialPopulation = initialPopulation;
-        this.elitism = elitism;
+        this.getElitism = getElitism;
         this.selector = selector;
         this.operators = operators;
         this.finishCondition = finishCondition;
+        this.eventHandlers = eventHandlers;
     }
 
     public run(): IGAContext<TProblem, TChromosome, TGene> {
@@ -43,12 +48,20 @@ export default class GA<
         do {
             // Perform reproduction selector
             this.currentContext.selection = this.selector.select(this.currentContext);
+            this.currentContext.fittest = this.currentContext.population.getNFittest(1)[0];
+            this.callHandlers("selected");
 
             // Apply elitism
-            const nextEpochChromosomes: TChromosome[] = this.currentContext.population.getNFittest(this.elitism);
+            const nextEpochChromosomes: TChromosome[] = this.getElitism
+                ? this.currentContext.population.getNFittest(this.getElitism(this.currentContext))
+                : [];
 
             // Perform operators (crossover, mutations, etc.)
             this.operators.forEach((operator) => {
+
+                this.currentContext.currentOperator = operator;
+                this.callHandlers("operatorStart");
+
                 const generatedChromosomes = operator.operate(this.currentContext);
                 generatedChromosomes.forEach((chromosome) => {
                     const fitness = this.currentContext.getFitness(chromosome);
@@ -58,12 +71,20 @@ export default class GA<
                     }
                 });
                 nextEpochChromosomes.push(...generatedChromosomes);
+
+                this.callHandlers("operatorFinish");
+                this.currentContext.currentOperator = undefined;
+
             });
 
             this.currentContext.population.newEpoch(nextEpochChromosomes);
-            console.log(`#${this.currentContext.population.getEpoch()} size ${this.currentContext.population.size()} best ${this.currentContext.fittest ? this.currentContext.fittest.getFitness() : 0}`);
+            this.callHandlers("newEpoch");
         } while (!this.finishCondition(this.currentContext));
 
         return this.currentContext;
+    }
+
+    private callHandlers(event: GARunEvent) {
+        this.eventHandlers.get(event)?.forEach((h) => h(this.currentContext));
     }
 }

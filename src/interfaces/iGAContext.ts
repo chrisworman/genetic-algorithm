@@ -1,4 +1,5 @@
 import IChromosome from "./iChromosome";
+import IOperator from "./iOperator";
 import IPopulation from "./iPopulation";
 import IProblem from "./iProblem";
 
@@ -11,6 +12,7 @@ export default interface IGAContext<
     population: IPopulation<TChromosome, TGene>;
     fittest?: TChromosome;
     selection: TChromosome[];
+    currentOperator?: IOperator<TProblem, TChromosome, TGene>;
     getRandomSelection: () => TChromosome;
     getFitness: (gene: TChromosome) => number;
 }

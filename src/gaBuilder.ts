@@ -1,8 +1,11 @@
 import GA from "./ga";
 import CachedFitnessGAContext from "./helpers/cachedFitnessGAContext";
+import { GARunEvent } from "./interfaces/gaRunEvent";
 import IChromosome from "./interfaces/iChromosome";
+import IGABuilder from "./interfaces/iGABuilder";
 import IGAContext from "./interfaces/iGAContext";
 import IGAContextFactory from "./interfaces/iGAContextFactory";
+import { IGARunEventHandler } from "./interfaces/iGARunEventHandler";
 import IOperator from "./interfaces/iOperator";
 import IPopulation from "./interfaces/iPopulation";
 import IProblem from "./interfaces/iProblem";
@@ -12,22 +15,23 @@ export default class GABuilder<
     TProblem extends IProblem<TChromosome, TGene>,
     TChromosome extends IChromosome<TGene>,
     TGene,
-> {
+> implements IGABuilder<TProblem, TChromosome, TGene> {
     private static DEFAULT_MAX_EPOCHS = 500;
     private static DEFAULT_SELECTOR_N_FITTEST = 500;
     private problem: TProblem;
     private contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>;
     private initialPopulation: IPopulation<TChromosome, TGene>;
-    private elitism: number;
+    private getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number;
     private selector: ISelector<TProblem, TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
     private finishCondition: (context: IGAContext<TProblem, TChromosome, TGene>) => boolean;
+    private eventHandlers: Map<GARunEvent, Array<IGARunEventHandler<TProblem, TChromosome, TGene>>>;
 
     public constructor() {
-        this.elitism = 0;
         this.operators = [];
+        this.eventHandlers = new Map();
 
-        // Set reasonable defaults
+        // Set reasonable defaults which can be overwritten
         this.contextFactory = CachedFitnessGAContext.getFactory();
         this.selector = {
             select: (context) => context.population.getNFittest(GABuilder.DEFAULT_SELECTOR_N_FITTEST),
@@ -47,8 +51,10 @@ export default class GABuilder<
         return this;
     }
 
-    public withElitism(elitism: number = 1): GABuilder<TProblem, TChromosome, TGene> {
-        this.elitism = elitism;
+    public withElitism(
+        getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        this.getElitism = getElitism;
         return this;
     }
 
@@ -80,15 +86,29 @@ export default class GABuilder<
         return this;
     }
 
+    public on(
+        event: GARunEvent,
+        handler: IGARunEventHandler<TProblem, TChromosome, TGene>,
+    ): GABuilder<TProblem, TChromosome, TGene> {
+        const handlers = this.eventHandlers.get(event);
+        if (handlers) {
+            handlers.push(handler);
+        } else {
+            this.eventHandlers.set(event, [handler]);
+        }
+        return this;
+    }
+
     public build(): GA<TProblem, TChromosome, TGene> {
         return new GA<TProblem, TChromosome, TGene>(
             this.problem,
             this.contextFactory,
             this.initialPopulation,
-            this.elitism,
+            this.getElitism,
             this.selector,
             this.operators,
             this.finishCondition,
+            this.eventHandlers,
         );
     }
 }

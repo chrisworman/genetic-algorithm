@@ -9,7 +9,6 @@ export default class ChromosomeMutators {
     ): TChromosome[] {
         return chromosomes.map((chromosome) => {
             const clone = chromosome.clone() as TChromosome;
-            const geneCount = chromosome.getGeneCount();
             const mutationCount = typeof getMutationCount === "number"
                 ? getMutationCount
                 : getMutationCount(chromosome);

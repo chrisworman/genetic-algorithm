@@ -1,6 +1,7 @@
 import IChromosome from "../interfaces/iChromosome";
 import iGAContext from "../interfaces/iGAContext";
 import IGAContextFactory from "../interfaces/iGAContextFactory";
+import IOperator from "../interfaces/iOperator";
 import IPopulation from "../interfaces/iPopulation";
 import IProblem from "../interfaces/iProblem";
 
@@ -13,6 +14,7 @@ export default class CachedFitnessGAContext<
     public problem: TProblem;
     public selection: TChromosome[];
     public maxCacheSize: number = 100000;
+    public currentOperator?: IOperator<TProblem, TChromosome, TGene>;
     private fitnessCache = new Map<string, number>();
 
     public constructor(problem: TProblem, initialPopulation: IPopulation<TChromosome, TGene>) {

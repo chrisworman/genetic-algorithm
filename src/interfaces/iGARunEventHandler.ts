@@ -2,11 +2,8 @@ import IChromosome from "./iChromosome";
 import IGAContext from "./iGAContext";
 import IProblem from "./iProblem";
 
-export default interface IOperator<
+export type IGARunEventHandler<
     TProblem extends IProblem<TChromosome, TGene>,
     TChromosome extends IChromosome<TGene>,
-    TGene,
-> {
-    operate(context: IGAContext<TProblem, TChromosome, TGene>): TChromosome[];
-    getDescription(): string;
-}
+TGene,
+> = (context: IGAContext<TProblem, TChromosome, TGene>) => void;
