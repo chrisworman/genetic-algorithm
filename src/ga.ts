@@ -9,14 +9,14 @@ import IProblem from "./interfaces/iProblem";
 import ISelector from "./interfaces/iSelector";
 
 export default class GA<
-    TProblem extends IProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {
     private problem: TProblem;
     private contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>;
     private currentContext: IGAContext<TProblem, TChromosome, TGene>;
-    private initialPopulation: IPopulation<TChromosome, TGene>;
+    private initialPopulation: IPopulation<TChromosome>;
     private getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number;
     private selector: ISelector<TProblem, TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
@@ -26,7 +26,7 @@ export default class GA<
     public constructor(
         problem: TProblem,
         contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>,
-        initialPopulation: IPopulation<TChromosome, TGene>,
+        initialPopulation: IPopulation<TChromosome>,
         getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number,
         selector: ISelector<TProblem, TChromosome, TGene>,
         operators: Array<IOperator<TProblem, TChromosome, TGene>>,

@@ -4,12 +4,12 @@ import IPopulation from "./iPopulation";
 import IProblem from "./iProblem";
 
 export default interface IGAContext<
-    TProblem extends IProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {
     problem: TProblem;
-    population: IPopulation<TChromosome, TGene>;
+    population: IPopulation<TChromosome>;
     fittest?: TChromosome;
     selection: TChromosome[];
     currentOperator?: IOperator<TProblem, TChromosome, TGene>;

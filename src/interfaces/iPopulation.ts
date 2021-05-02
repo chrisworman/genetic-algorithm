@@ -1,6 +1,6 @@
 import IChromosome from "./iChromosome";
 
-export default interface IPopulation<TChromosome extends IChromosome<TGene>, TGene> {
+export default interface IPopulation<TChromosome extends IChromosome> {
     getEpoch: () => number;
     newEpoch: (newChromosomes: TChromosome[]) => void;
     getNFittest: (n: number) => TChromosome[];

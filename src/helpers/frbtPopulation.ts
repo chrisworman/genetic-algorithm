@@ -6,7 +6,7 @@ import IPopulation from "../interfaces/iPopulation";
 export default class FRBTPopulation<
     TChromosome extends IChromosome<TGene>,
     TGene,
-> implements IPopulation<TChromosome, TGene> {
+> implements IPopulation<TChromosome> {
     private epoch: number;
     private serializeToChromosome: Map<string, TChromosome>;
     private fitnessToChromosomes: createTree.Tree<number, TChromosome[]>;

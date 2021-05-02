@@ -12,7 +12,7 @@ import IProblem from "./interfaces/iProblem";
 import ISelector from "./interfaces/iSelector";
 
 export default class GABuilder<
-    TProblem extends IProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > implements IGABuilder<TProblem, TChromosome, TGene> {
@@ -20,7 +20,7 @@ export default class GABuilder<
     private static DEFAULT_SELECTOR_N_FITTEST = 500;
     private problem: TProblem;
     private contextFactory: IGAContextFactory<TProblem, TChromosome, TGene>;
-    private initialPopulation: IPopulation<TChromosome, TGene>;
+    private initialPopulation: IPopulation<TChromosome>;
     private getElitism: (context: IGAContext<TProblem, TChromosome, TGene>) => number;
     private selector: ISelector<TProblem, TChromosome, TGene>;
     private operators: Array<IOperator<TProblem, TChromosome, TGene>>;
@@ -59,7 +59,7 @@ export default class GABuilder<
     }
 
     public withInitialPopulation(
-        initialPopulation: IPopulation<TChromosome, TGene>,
+        initialPopulation: IPopulation<TChromosome>,
     ): GABuilder<TProblem, TChromosome, TGene> {
         this.initialPopulation = initialPopulation;
         return this;

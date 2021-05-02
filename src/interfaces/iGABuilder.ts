@@ -9,7 +9,7 @@ import IProblem from "./iProblem";
 import ISelector from "./iSelector";
 
 export default interface IGABuilder<
-    TProblem extends IProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {
@@ -24,7 +24,7 @@ export default interface IGABuilder<
     ): GABuilder<TProblem, TChromosome, TGene>;
 
     withInitialPopulation(
-        initialPopulation: IPopulation<TChromosome, TGene>,
+        initialPopulation: IPopulation<TChromosome>,
     ): GABuilder<TProblem, TChromosome, TGene>;
 
     withSelector(

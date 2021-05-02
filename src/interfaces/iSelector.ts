@@ -3,7 +3,7 @@ import IGAContext from "./iGAContext";
 import IProblem from "./iProblem";
 
 export default interface ISelector<
-    TProblem extends IProblem<TChromosome, TGene>,
+    TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
 > {

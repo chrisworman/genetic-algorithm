@@ -1,4 +1,4 @@
-export default interface IChromosome<TGene> {
+export default interface IChromosome<TGene = {}> {
     getAge: () => number;
     incrementAge: () => void;
     getFitness: () => number;
