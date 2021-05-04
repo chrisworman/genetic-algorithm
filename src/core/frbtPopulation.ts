@@ -1,6 +1,6 @@
 import createTree from "functional-red-black-tree";
-import { IChromosome } from "../interfaces/iChromosome";
-import { IPopulation } from "../interfaces/iPopulation";
+import { IChromosome } from "../core/interfaces/iChromosome";
+import { IPopulation } from "../core/interfaces/iPopulation";
 
 // A Functional red-black tree implementation of IPopulation
 export class FRBTPopulation<

@@ -1,4 +1,4 @@
-import { IChromosome } from "../interfaces/iChromosome";
+import { IChromosome } from "../core/interfaces/iChromosome";
 
 // A chromosome that efficiently stores boolean genes as binary numbers.
 export class BooleanChromosome implements IChromosome<boolean> {

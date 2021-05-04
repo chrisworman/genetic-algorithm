@@ -1,4 +1,4 @@
-import { IChromosome } from "../interfaces/iChromosome";
+import { IChromosome } from "../core/interfaces/iChromosome";
 
 export class ChromosomeMutators {
     public static applyGeneMutator<TChromosome extends IChromosome<TGene>, TGene>(

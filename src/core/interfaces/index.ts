@@ -1,0 +1,10 @@
+export { GARunEvent } from "./gaRunEvent";
+export { IChromosome } from "./iChromosome";
+export { IGABuilder } from "./iGABuilder";
+export { IGAContext } from "./iGAContext";
+export { IGAContextFactory } from "./iGAContextFactory";
+export { IGARunEventHandler } from "./iGARunEventHandler";
+export { IOperator } from "./iOperator";
+export { IPopulation } from "./iPopulation";
+export { IProblem } from "./iProblem";
+export { ISelector } from "./iSelector";

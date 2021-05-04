@@ -1,7 +1,7 @@
+import { CachedFitnessGAContext } from ".";
 import { GA } from "./ga";
-import { CachedFitnessGAContext } from "./helpers/cachedFitnessGAContext";
-import { GARunEvent } from "./interfaces/gaRunEvent";
-import { IChromosome } from "./interfaces/iChromosome";
+import { GARunEvent } from "./interfaces";
+import { IChromosome } from "./interfaces";
 import { IGABuilder } from "./interfaces/iGABuilder";
 import { IGAContext } from "./interfaces/iGAContext";
 import { IGAContextFactory } from "./interfaces/iGAContextFactory";

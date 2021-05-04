@@ -1,9 +1,9 @@
 import fs from "fs";
-import { GABuilder } from "../../gaBuilder";
-import { BooleanChromosome } from "../../helpers/booleanChromosome";
-import { ChromosomeCombiners } from "../../helpers/chromosomeCombiners";
-import { ChromosomeMutators } from "../../helpers/chromosomeMutators";
-import { FRBTPopulation } from "../../helpers/frbtPopulation";
+import { GABuilder } from "../../core";
+import { BooleanChromosome } from "../../core";
+import { ChromosomeCombiners } from "../../core";
+import { ChromosomeMutators } from "../../core";
+import { FRBTPopulation } from "../../core";
 import { CNFExpression } from "./CNFExpression";
 import { CNFSatProblem } from "./CNFSatProblem";
 

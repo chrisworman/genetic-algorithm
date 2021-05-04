@@ -1,14 +1,29 @@
-import { IChromosome } from "../interfaces/iChromosome";
-import { IGAContext } from "../interfaces/iGAContext";
-import { IGAContextFactory } from "../interfaces/iGAContextFactory";
-import { IOperator } from "../interfaces/iOperator";
-import { IPopulation } from "../interfaces/iPopulation";
-import { IProblem } from "../interfaces/iProblem";
+import { IChromosome } from "../core/interfaces/iChromosome";
+import { IGAContext } from "../core/interfaces/iGAContext";
+import { IGAContextFactory } from "../core/interfaces/iGAContextFactory";
+import { IOperator } from "../core/interfaces/iOperator";
+import { IPopulation } from "../core/interfaces/iPopulation";
+import { IProblem } from "../core/interfaces/iProblem";
 
 export class CachedFitnessGAContext<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome,
 > implements IGAContext<TProblem, TChromosome> {
+
+    public static getFactory<
+        TProblem extends IProblem<TChromosome>,
+        TChromosome extends IChromosome<TGene>,
+        TGene,
+    >(): IGAContextFactory<TProblem, TChromosome> {
+        return {
+            createContext: (
+                problem: TProblem,
+                initialPopulation: IPopulation<TChromosome>,
+            ) => {
+                return new CachedFitnessGAContext(problem, initialPopulation);
+            },
+        };
+    }
     public population: IPopulation<TChromosome>;
     public problem: TProblem;
     public selection: TChromosome[];
@@ -36,20 +51,5 @@ export class CachedFitnessGAContext<
             this.fitnessCache.set(serializedGene, fitness);
         }
         return fitness;
-    }
-
-    public static getFactory<
-        TProblem extends IProblem<TChromosome>,
-        TChromosome extends IChromosome<TGene>,
-        TGene,
-    >(): IGAContextFactory<TProblem, TChromosome> {
-        return {
-            createContext: (
-                problem: TProblem,
-                initialPopulation: IPopulation<TChromosome>,
-            ) => {
-                return new CachedFitnessGAContext(problem, initialPopulation);
-            },
-        };
     }
 }

@@ -1,5 +1,6 @@
 import { GARunEvent } from "./gaRunEvent";
 import { IChromosome } from "./iChromosome";
+import { IGA } from "./iGA";
 import { IGAContext } from "./iGAContext";
 import { IGAContextFactory } from "./iGAContextFactory";
 import { IOperator } from "./iOperator";
@@ -41,4 +42,6 @@ export interface IGABuilder<
         event: GARunEvent,
         handler: (context: IGAContext<TProblem, TChromosome>) => void,
     ): IGABuilder<TProblem, TChromosome>;
+
+    build(): IGA<TProblem, TChromosome>;
 }

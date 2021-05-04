@@ -1,5 +1,5 @@
-import { BooleanChromosome } from "../../helpers/booleanChromosome";
-import { IProblem } from "../../interfaces/iProblem";
+import { BooleanChromosome } from "../../core/booleanChromosome";
+import { IProblem } from "../../core/interfaces/iProblem";
 import { CNFExpression } from "./CNFExpression";
 
 export class CNFSatProblem implements IProblem<BooleanChromosome> {

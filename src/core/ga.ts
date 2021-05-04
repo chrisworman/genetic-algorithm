@@ -1,5 +1,6 @@
 import { GARunEvent } from "./interfaces/gaRunEvent";
 import { IChromosome } from "./interfaces/iChromosome";
+import { IGA } from "./interfaces/iGA";
 import { IGAContext } from "./interfaces/iGAContext";
 import { IGAContextFactory } from "./interfaces/iGAContextFactory";
 import { IGARunEventHandler } from "./interfaces/iGARunEventHandler";
@@ -12,7 +13,7 @@ export class GA<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,
-> {
+> implements IGA<TProblem, TChromosome> {
     private problem: TProblem;
     private contextFactory: IGAContextFactory<TProblem, TChromosome>;
     private currentContext: IGAContext<TProblem, TChromosome>;

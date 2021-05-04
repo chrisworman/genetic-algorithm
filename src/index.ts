@@ -1,2 +1,2 @@
-export { GA } from "./ga";
-export { GABuilder } from "./gaBuilder";
+export { GABuilder } from "./core/gaBuilder";
+export * from "./core/interfaces";

@@ -1,4 +1,4 @@
-import { IChromosome } from "../interfaces/iChromosome";
+import { IChromosome } from "./interfaces/iChromosome";
 
 // An array-based implementation of IChromosome
 // TODO: consider constraining TArrayChromosomeGene to be number | string | boolean since this solution
