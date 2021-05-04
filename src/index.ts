@@ -8,11 +8,11 @@ import ChromosomeMutators from "./helpers/chromosomeMutators";
 import FRBTPopulation from "./helpers/frbtPopulation";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
+const INITIAL_POPULATION_SIZE = 5000000; // TODO: function of number of clauses / variable count
 const MAX_EPOCH = 1500;
-const ELITISM = 3500;
-const SELECTION_SIZE = 5000;
-const MAX_GENES_MUTATED = 5; // TODO: function of number of variables
+const ELITISM = 5000;
+const SELECTION_SIZE = 10000;
+const MAX_GENES_MUTATED = 10; // TODO: function of number of variables
 
 const main = () => {
     const [ , , flag, fileName ] = process.argv;
