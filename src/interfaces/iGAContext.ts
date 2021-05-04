@@ -1,9 +1,9 @@
-import IChromosome from "./iChromosome";
-import IOperator from "./iOperator";
-import IPopulation from "./iPopulation";
-import IProblem from "./iProblem";
+import { IChromosome } from "./iChromosome";
+import { IOperator } from "./iOperator";
+import { IPopulation } from "./iPopulation";
+import { IProblem } from "./iProblem";
 
-export default interface IGAContext<
+export interface IGAContext<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome,
 > {

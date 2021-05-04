@@ -1,6 +1,6 @@
-import IChromosome from "../interfaces/iChromosome";
+import { IChromosome } from "../interfaces/iChromosome";
 
-export default class ChromosomeMutators {
+export class ChromosomeMutators {
     public static applyGeneMutator<TChromosome extends IChromosome<TGene>, TGene>(
         chromosomes: TChromosome[],
         mutate: (item: TGene) => TGene,

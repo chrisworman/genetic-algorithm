@@ -1,13 +1,13 @@
 import { GARunEvent } from "./gaRunEvent";
-import IChromosome from "./iChromosome";
-import IGAContext from "./iGAContext";
-import IGAContextFactory from "./iGAContextFactory";
-import IOperator from "./iOperator";
-import IPopulation from "./iPopulation";
-import IProblem from "./iProblem";
-import ISelector from "./iSelector";
+import { IChromosome } from "./iChromosome";
+import { IGAContext } from "./iGAContext";
+import { IGAContextFactory } from "./iGAContextFactory";
+import { IOperator } from "./iOperator";
+import { IPopulation } from "./iPopulation";
+import { IProblem } from "./iProblem";
+import { ISelector } from "./iSelector";
 
-export default interface IGABuilder<
+export interface IGABuilder<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome,
 > {

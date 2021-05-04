@@ -1,17 +1,17 @@
-import GA from "./ga";
-import CachedFitnessGAContext from "./helpers/cachedFitnessGAContext";
+import { GA } from "./ga";
+import { CachedFitnessGAContext } from "./helpers/cachedFitnessGAContext";
 import { GARunEvent } from "./interfaces/gaRunEvent";
-import IChromosome from "./interfaces/iChromosome";
-import IGABuilder from "./interfaces/iGABuilder";
-import IGAContext from "./interfaces/iGAContext";
-import IGAContextFactory from "./interfaces/iGAContextFactory";
+import { IChromosome } from "./interfaces/iChromosome";
+import { IGABuilder } from "./interfaces/iGABuilder";
+import { IGAContext } from "./interfaces/iGAContext";
+import { IGAContextFactory } from "./interfaces/iGAContextFactory";
 import { IGARunEventHandler } from "./interfaces/iGARunEventHandler";
-import IOperator from "./interfaces/iOperator";
-import IPopulation from "./interfaces/iPopulation";
-import IProblem from "./interfaces/iProblem";
-import ISelector from "./interfaces/iSelector";
+import { IOperator } from "./interfaces/iOperator";
+import { IPopulation } from "./interfaces/iPopulation";
+import { IProblem } from "./interfaces/iProblem";
+import { ISelector } from "./interfaces/iSelector";
 
-export default class GABuilder<
+export class GABuilder<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome<TGene>,
     TGene,

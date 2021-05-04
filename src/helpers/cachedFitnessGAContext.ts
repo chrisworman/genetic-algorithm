@@ -1,14 +1,14 @@
-import IChromosome from "../interfaces/iChromosome";
-import iGAContext from "../interfaces/iGAContext";
-import IGAContextFactory from "../interfaces/iGAContextFactory";
-import IOperator from "../interfaces/iOperator";
-import IPopulation from "../interfaces/iPopulation";
-import IProblem from "../interfaces/iProblem";
+import { IChromosome } from "../interfaces/iChromosome";
+import { IGAContext } from "../interfaces/iGAContext";
+import { IGAContextFactory } from "../interfaces/iGAContextFactory";
+import { IOperator } from "../interfaces/iOperator";
+import { IPopulation } from "../interfaces/iPopulation";
+import { IProblem } from "../interfaces/iProblem";
 
-export default class CachedFitnessGAContext<
+export class CachedFitnessGAContext<
     TProblem extends IProblem<TChromosome>,
     TChromosome extends IChromosome,
-> implements iGAContext<TProblem, TChromosome> {
+> implements IGAContext<TProblem, TChromosome> {
     public population: IPopulation<TChromosome>;
     public problem: TProblem;
     public selection: TChromosome[];

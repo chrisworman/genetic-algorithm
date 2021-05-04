@@ -1,11 +1,11 @@
 import fs from "fs";
-import GABuilder from "../../gaBuilder";
-import BooleanChromosome from "../../helpers/booleanChromosome";
-import ChromosomeCombiners from "../../helpers/chromosomeCombiners";
-import ChromosomeMutators from "../../helpers/chromosomeMutators";
-import FRBTPopulation from "../../helpers/frbtPopulation";
-import CNFExpresion from "./CNFExpression";
-import CNFSatProblem from "./CNFSatProblem";
+import { GABuilder } from "../../gaBuilder";
+import { BooleanChromosome } from "../../helpers/booleanChromosome";
+import { ChromosomeCombiners } from "../../helpers/chromosomeCombiners";
+import { ChromosomeMutators } from "../../helpers/chromosomeMutators";
+import { FRBTPopulation } from "../../helpers/frbtPopulation";
+import { CNFExpression } from "./CNFExpression";
+import { CNFSatProblem } from "./CNFSatProblem";
 
 // TODO: command line args
 const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
@@ -28,7 +28,7 @@ const main = () => {
     // Read CNF file and create CNF SAT instance
     console.log("Creating CNFSatProblem ...");
     const cnfFileText = fs.readFileSync(fileName, "utf8");
-    const problem: CNFSatProblem = new CNFSatProblem(CNFExpresion.fromCNFFileText(cnfFileText));
+    const problem: CNFSatProblem = new CNFSatProblem(CNFExpression.fromCNFFileText(cnfFileText));
     console.log(`  ${problem.expression.getClauseCount()} clauses ${problem.expression.getVariableCount()} variables`);
 
     // Create the initial population

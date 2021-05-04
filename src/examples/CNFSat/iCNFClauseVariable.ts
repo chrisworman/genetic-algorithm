@@ -1,4 +1,4 @@
-export default interface ICNFClauseVariable {
+export interface ICNFClauseVariable {
     index: number;
     isNegated: boolean;
 }

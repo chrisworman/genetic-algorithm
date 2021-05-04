@@ -1,5 +1,5 @@
-import IChromosome from "./iChromosome";
+import { IChromosome } from "./iChromosome";
 
-export default interface IProblem<TChromosome extends IChromosome> {
+export interface IProblem<TChromosome extends IChromosome> {
     getFitness(gene: TChromosome): number;
 }

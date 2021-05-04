@@ -1,6 +1,6 @@
-import IChromosome from "../interfaces/iChromosome";
+import { IChromosome } from "../interfaces/iChromosome";
 
-export default class ChromosomeCombiners {
+export class ChromosomeCombiners {
     public static alternate<TChromosome extends IChromosome<TGene>, TGene>(
         c1: TChromosome,
         c2: TChromosome,

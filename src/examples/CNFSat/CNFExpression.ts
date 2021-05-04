@@ -1,9 +1,9 @@
-import CNFClause from "./CNFClause";
+import { CNFClause } from "./CNFClause";
 
 // eg. (~x2 || x3 || x4) && (~x1) && (~x3 || ~x4)
-export default class CNFExpresion {
+export class CNFExpression {
     // https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html
-    public static fromCNFFileText(fileText: string): CNFExpresion {
+    public static fromCNFFileText(fileText: string): CNFExpression {
         const fileLines = fileText.split("\n");
         const clauses = [];
         let variableCount = 0;
@@ -32,7 +32,7 @@ export default class CNFExpresion {
         if (currentIndices.length > 0) {
             clauses.push(CNFClause.fromCNFFileIndices(currentIndices));
         }
-        return new CNFExpresion(variableCount, clauses);
+        return new CNFExpression(variableCount, clauses);
     }
 
     private clauses: CNFClause[];

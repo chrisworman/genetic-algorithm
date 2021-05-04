@@ -1,9 +1,9 @@
 import createTree from "functional-red-black-tree";
-import IChromosome from "../interfaces/iChromosome";
-import IPopulation from "../interfaces/iPopulation";
+import { IChromosome } from "../interfaces/iChromosome";
+import { IPopulation } from "../interfaces/iPopulation";
 
 // A Functional red-black tree implementation of IPopulation
-export default class FRBTPopulation<
+export class FRBTPopulation<
     TChromosome extends IChromosome,
 > implements IPopulation<TChromosome> {
     private epoch: number;

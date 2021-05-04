@@ -1,7 +1,7 @@
-import ICNFClauseVariable from "./iCNFClauseVariable";
+import { ICNFClauseVariable } from "./iCNFClauseVariable";
 
 // eg. (~x2 || x3 || x4)
-export default class CNFClause {
+export class CNFClause {
     // https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html
     public static fromCNFFileIndices(oneBasedNegatedIndices: number[]) {
         const variables = oneBasedNegatedIndices.map((oneBasedNegatedIndex) => {

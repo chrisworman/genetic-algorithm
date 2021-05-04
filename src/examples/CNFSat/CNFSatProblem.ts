@@ -1,8 +1,8 @@
-import BooleanChromosome from "../../helpers/booleanChromosome";
-import IProblem from "../../interfaces/iProblem";
-import CNFExpression from "./CNFExpression";
+import { BooleanChromosome } from "../../helpers/booleanChromosome";
+import { IProblem } from "../../interfaces/iProblem";
+import { CNFExpression } from "./CNFExpression";
 
-export default class CNFSatProblem implements IProblem<BooleanChromosome> {
+export class CNFSatProblem implements IProblem<BooleanChromosome> {
     public expression: CNFExpression;
 
     constructor(expression: CNFExpression) {

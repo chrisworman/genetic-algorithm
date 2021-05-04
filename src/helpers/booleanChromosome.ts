@@ -1,7 +1,7 @@
-import IChromosome from "../interfaces/iChromosome";
+import { IChromosome } from "../interfaces/iChromosome";
 
 // A chromosome that efficiently stores boolean genes as binary numbers.
-export default class BooleanChromosome implements IChromosome<boolean> {
+export class BooleanChromosome implements IChromosome<boolean> {
 
     public static createRandom(numberOfGenes: number): BooleanChromosome {
         const truthAssignments: boolean[] = new Array(numberOfGenes);

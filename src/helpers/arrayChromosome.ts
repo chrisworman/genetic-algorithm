@@ -1,9 +1,9 @@
-import IChromosome from "../interfaces/iChromosome";
+import { IChromosome } from "../interfaces/iChromosome";
 
 // An array-based implementation of IChromosome
 // TODO: consider constraining TArrayChromosomeGene to be number | string | boolean since this solution
 // relies on serialization / deserialization.  Perhaps rename to PrimitiveArrayChromosome?
-export default class ArrayChromosome<TGene> implements IChromosome<TGene> {
+export class ArrayChromosome<TGene> implements IChromosome<TGene> {
     public age: number;
     private array: TGene[];
     private cachedSerialized: string | null;
