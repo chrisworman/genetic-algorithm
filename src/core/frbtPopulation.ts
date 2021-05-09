@@ -106,7 +106,6 @@ export class FRBTPopulation<
     }
 
     private addIfNew(newChromosomes: TChromosome[]) {
-        let numberAdded = 0;
         newChromosomes.forEach((chromosome) => {
             const serialized = chromosome.serialize();
             if (!this.serializeToChromosome.has(serialized)) {
@@ -118,7 +117,6 @@ export class FRBTPopulation<
                 } else {
                     this.fitnessToChromosomes = this.fitnessToChromosomes.insert(fitness, [chromosome]);
                 }
-                numberAdded++;
             }
         });
     }

@@ -1,17 +1,17 @@
 import { IChromosome } from "./interfaces/iChromosome";
 
 // An array-based implementation of IChromosome
-// TODO: consider constraining TArrayChromosomeGene to be number | string | boolean since this solution
+// TODO: consider constraining TArrayChromosomeGene to be number | string since this solution
 // relies on serialization / deserialization.  Perhaps rename to PrimitiveArrayChromosome?
 export class ArrayChromosome<TGene> implements IChromosome<TGene> {
     public age: number;
-    private array: TGene[];
+    private genes: TGene[];
     private cachedSerialized: string | null;
     private fitness: number;
 
-    public constructor(initialArray?: TGene[]) {
+    public constructor(genes?: TGene[]) {
         this.age = 0;
-        this.array = initialArray ? initialArray : [];
+        this.genes = genes ? genes : [];
         this.cachedSerialized = null;
     }
 
@@ -38,7 +38,7 @@ export class ArrayChromosome<TGene> implements IChromosome<TGene> {
 
     public deserialize(serialized: string): IChromosome<TGene> {
         const deserialized = JSON.parse(serialized);
-        const result = new ArrayChromosome<TGene>(deserialized.array);
+        const result = new ArrayChromosome<TGene>(deserialized.genes);
         result.setFitness(deserialized.fitness);
         return result;
     }
@@ -46,24 +46,24 @@ export class ArrayChromosome<TGene> implements IChromosome<TGene> {
     public serialize(): string {
         if (!this.cachedSerialized) {
             this.cachedSerialized = JSON.stringify({
-                array: this.array,
                 fitness: this.fitness,
+                genes: this.genes,
             });
         }
         return this.cachedSerialized;
     }
 
     public getGeneCount(): number {
-        return this.array.length;
+        return this.genes.length;
     }
 
     public setGeneAt(index: number, gene: TGene) {
         this.cachedSerialized = null;
-        this.array[index] = gene;
+        this.genes[index] = gene;
     }
 
     public getGeneAt(index: number): TGene {
-        return this.array[index];
+        return this.genes[index];
     }
 
     public getRandomGene(): TGene {
@@ -74,7 +74,7 @@ export class ArrayChromosome<TGene> implements IChromosome<TGene> {
        return Math.floor(Math.random() * this.getGeneCount());
     }
 
-    public toArray(): TGene[] {
-        return [ ...this.array ];
+    public getGenes(): TGene[] {
+        return [ ...this.genes ];
     }
 }

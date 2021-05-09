@@ -57,6 +57,8 @@ export class GABuilder<
         return this;
     }
 
+    // TODO: consider withInitialChromosomes and then internally GA can use the FRBTPopulation
+    // And the consumer doesn't need to know and doesn't need to be exported.
     public withInitialPopulation(
         initialPopulation: IPopulation<TChromosome>,
     ): GABuilder<TProblem, TChromosome, TGene> {

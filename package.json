@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "cnfsat": "tsc && node dist/examples/CNFSat/index.js"
+    "cnfsat": "tsc && node dist/examples/CNFSat/cnfSat.js",
+    "mis": "tsc && node dist/examples/MIS/mis.js"
   },
   "devDependencies": {
     "tslint": "^5.12.1",

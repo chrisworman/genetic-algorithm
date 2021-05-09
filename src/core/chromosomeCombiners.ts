@@ -62,4 +62,6 @@ export class ChromosomeCombiners {
         }
         return [r1 as TChromosome, r2 as TChromosome];
     }
+
+    // TODO: multichromosome combiners
 }

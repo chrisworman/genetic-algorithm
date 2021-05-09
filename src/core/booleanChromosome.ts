@@ -3,10 +3,10 @@ import { IChromosome } from "../core/interfaces/iChromosome";
 // A chromosome that efficiently stores boolean genes as binary numbers.
 export class BooleanChromosome implements IChromosome<boolean> {
 
-    public static createRandom(numberOfGenes: number): BooleanChromosome {
+    public static createRandom(numberOfGenes: number, rate: number = 0.5): BooleanChromosome {
         const truthAssignments: boolean[] = new Array(numberOfGenes);
         for (let i = 0; i < numberOfGenes; i++) {
-            truthAssignments[i] = Math.random() < 0.5;
+            truthAssignments[i] = Math.random() < rate;
         }
         return new BooleanChromosome(truthAssignments);
     }
@@ -130,7 +130,7 @@ export class BooleanChromosome implements IChromosome<boolean> {
         return buffer.join("");
     }
 
-    public toArray(): boolean[] {
+    public getGenes(): boolean[] {
         const geneCount = this.getGeneCount();
         const result: boolean[] = [];
         for (let i = 0; i < geneCount; i++) {

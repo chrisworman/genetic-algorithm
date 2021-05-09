@@ -1,56 +1,55 @@
-import fs from "fs";
 import { GABuilder } from "../../core";
 import { BooleanChromosome } from "../../core";
 import { ChromosomeCombiners } from "../../core";
 import { ChromosomeMutators } from "../../core";
 import { FRBTPopulation } from "../../core";
-import { CNFExpression } from "./CNFExpression";
-import { CNFSatProblem } from "./CNFSatProblem";
+import { MISFileReader } from "./MISFileReader";
+import { MISProblem } from "./MISProblem";
 
 // TODO: command line args
-const INITIAL_POPULATION_SIZE = 500000; // TODO: function of number of clauses / variable count
-const MAX_EPOCH = 1500;
-const ELITISM = 5000;
+const INITIAL_POPULATION_SIZE = 1000000; // TODO: function of number of clauses / variable count
+const MAX_EPOCH = 2500;
+const ELITISM = 1000;
 const SELECTION_SIZE = 10000;
-const MAX_GENES_MUTATED = 10; // TODO: function of number of variables
+const MAX_GENES_MUTATED = 5; // TODO: function of number of variables
 
-const main = () => {
-    const [ , , flag, fileName ] = process.argv;
+const cnfSat = () => {
+    const [ , , flag, filePath ] = process.argv;
     if (flag !== "-f") {
-        console.error(`Invalid option ${flag}.  Try -f filename.cnf`);
+        console.error(`Invalid option ${flag}.  Try -f filename.mis`);
         return;
     }
-    if (!fileName || !fileName.endsWith(".cnf")) {
-        console.error(`Invalid file name ${fileName}: must be .cnf file`);
+    if (!filePath || !filePath.endsWith(".mis")) {
+        console.error(`Invalid file name ${filePath}: must be .mis file`);
         return;
     }
 
-    // Read CNF file and create CNF SAT instance
-    console.log("Creating CNFSatProblem ...");
-    const cnfFileText = fs.readFileSync(fileName, "utf8");
-    const problem: CNFSatProblem = new CNFSatProblem(CNFExpression.fromCNFFileText(cnfFileText));
-    console.log(`  ${problem.expression.getClauseCount()} clauses ${problem.expression.getVariableCount()} variables`);
+    console.log("Creating MISProblem ...");
+    const problem: MISProblem = MISFileReader.read(filePath);
 
     // Create the initial population
     console.log(`Creating initial population of ${INITIAL_POPULATION_SIZE} chromosomes ...`);
-    const variableCount = problem.expression.getVariableCount();
-    const initialChromosomes: BooleanChromosome[] = new Array(variableCount);
+    const vertexCount = problem.getVertexCount();
+    const initialChromosomes: BooleanChromosome[] = new Array(INITIAL_POPULATION_SIZE);
     for (let i = 0; i < INITIAL_POPULATION_SIZE; i++) {
-        const randomChromosome = BooleanChromosome.createRandom(variableCount);
+        const randomChromosome = BooleanChromosome.createRandom(vertexCount, 0.01);
         randomChromosome.setFitness(problem.getFitness(randomChromosome));
         initialChromosomes[i] = randomChromosome;
     }
     const initialPopulation: FRBTPopulation<BooleanChromosome> = new FRBTPopulation(initialChromosomes);
 
     // Build the genetic algorithm
-    const gaBuilder: GABuilder<CNFSatProblem, BooleanChromosome, boolean> = new GABuilder();
+    const gaBuilder: GABuilder<MISProblem, BooleanChromosome, boolean> = new GABuilder();
     const ga = gaBuilder
         .withProblem(problem)
         .withInitialPopulation(initialPopulation)
         .withElitism(() => ELITISM)
         .withSelector({
             select: (context) => {
-                return context.population.getNFittest(SELECTION_SIZE);
+                return context.population.getNFittest(
+                   // Math.max(Math.ceil(SELECTION_SIZE / (context.population.getEpoch())), 50),
+                   SELECTION_SIZE - (context.population.getEpoch() * 4),
+                );
             },
         })
         .withOperator({
@@ -64,44 +63,11 @@ const main = () => {
             },
         })
         .withOperator({
-            getDescription: () => "Mutation targeting variables from unsatisfied clauses",
-            operate: (context) => {
-                return ChromosomeMutators.applyGeneMutator<BooleanChromosome, boolean>(
-                    context.selection,
-                    (a) => !a,
-                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1, // TODO: use percentage of # of variables
-                    (chromosome) => {
-                        // Get the unsatisfied clauses for `chromosome`, target the variable indices from those clauses
-                        return context.problem.expression.getUnsatisfiedClauses(chromosome.toArray())
-                            .map((c) => c.getVariables().map((v) => v.index))
-                            .reduce((p, c) => p.concat(c));
-                    },
-                );
-            },
-        })
-        .withOperator({
             getDescription: () => "Swap Mutation",
             operate: (context) => {
                 return ChromosomeMutators.swapGenes<BooleanChromosome, boolean>(
                     context.selection,
                     () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
-                );
-            },
-        })
-        .withOperator({
-            getDescription: () => "Swap mutation targeting variables from unsatisfied clauses",
-            operate: (context) => {
-                return ChromosomeMutators.swapGenes<BooleanChromosome, boolean>(
-                    context.selection,
-                    () => Math.floor(Math.random() * MAX_GENES_MUTATED) + 1,
-                    (chromosome) => {
-                        const clauses = context.problem.expression.getUnsatisfiedClauses(chromosome.toArray());
-                        const variables: Set<number> = new Set();
-                        clauses.forEach((c) => {
-                            c.getVariables().forEach((v) => variables.add(v.index));
-                        });
-                        return Array.from(variables);
-                    },
                 );
             },
         })
@@ -154,7 +120,7 @@ const main = () => {
             console.log(`#${population.getEpoch()} size ${population.getSize()} fittest ${f && f.getFitness()}`);
         })
         .withFinishCondition((context) => {
-            return context.fittest?.getFitness() === context.problem.expression.getClauseCount() // satisfied
+            return context.fittest?.getFitness() === 30 // TODO: read from mis file
                 || context.population.getEpoch() >= MAX_EPOCH; // max number of generations
         })
         .build();
@@ -170,4 +136,4 @@ const main = () => {
     }
 };
 
-main();
+cnfSat();
